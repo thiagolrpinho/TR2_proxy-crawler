@@ -14,7 +14,7 @@ int main() {
   network_socket = socket(AF_INET,SOCK_STREAM,0);
 
   //Especifica um endereço para o Socket
-  char server_ip[15];
+  int server_ip = INADDR_ANY;
   struct sockaddr_in server_address;
   server_address.sin_family = AF_INET;
   server_address.sin_port = htons(8228);

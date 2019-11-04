@@ -9,14 +9,14 @@
 
 int main() {
 
-  char server_message[256] = "Hello i am the server";
+  char server_message[256] = "Hello you reached the Server!";
 
   //Cria Socket
   int server_socket;
   server_socket = socket(AF_INET,SOCK_STREAM,0);
 
   //Define o endereço do Socket
-  char server_ip[15];
+  int server_ip = INADDR_ANY;
   struct sockaddr_in server_address;
   server_address.sin_family = AF_INET;
   server_address.sin_port = htons(8228);
