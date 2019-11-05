@@ -14,7 +14,7 @@ int main() {
   network_socket = socket(AF_INET,SOCK_STREAM,0);
 
   //Especifica um endereço para o Socket
-  int server_ip = INADDR_ANY;
+  int server_ip = inet_addr("127.0.0.1");
   struct sockaddr_in server_address;
   server_address.sin_family = AF_INET;
   server_address.sin_port = htons(8228);
@@ -31,7 +31,8 @@ int main() {
   recv(network_socket, &server_response, sizeof(server_response),0);
 
   //Imprime a resposta do servidor
-  printf("A resposta do servidor foi:\n%s",server_response);
+  printf("\nA resposta do servidor foi: \n %s",server_response);
+  printf("\n---%d---", server_ip);
 
   //Encerra conexão
   close(network_socket);
