@@ -9,7 +9,9 @@
 
 int main() {
 
-  char server_message[256] = "Hello you reached the Server!";
+  char http_header[256] = "HTTP/1.1 200 OK\r\n\n";
+  char server_message[256] = "Hello, you reached the Server!";
+  strcat(http_header, server_message);
 
   //Cria Socket
   int server_socket;
@@ -28,13 +30,15 @@ int main() {
   listen(server_socket, 0);
 
   int client_socket;
-  client_socket = accept(server_socket, NULL, NULL);
+  //Deixa o servidor escutando
+  while(1) {
+    client_socket = accept(server_socket, NULL, NULL);
+    //Envia a mensagem
+    send(client_socket, http_header, sizeof(http_header), 0);
+  }
 
-  //Envia a mensagem
-  send(client_socket, server_message, sizeof(server_message), 0);
-
-  //Encerra conexão
-  close(server_socket);
+    //Encerra conexão
+    close(server_socket);
 
   return 0;
 }
