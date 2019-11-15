@@ -6,6 +6,7 @@
 #include <sys/types.h>
 
 #include <netinet/in.h>
+#include <arpa/inet.h>
 
 int main() {
 
@@ -28,6 +29,7 @@ int main() {
 
   //Recebe o dado do servidor
   char server_response[256];
+  char request[] = "GET / HTTP/1.1\r\n\r\n"
   recv(network_socket, &server_response, sizeof(server_response),0);
 
   //Imprime a resposta do servidor

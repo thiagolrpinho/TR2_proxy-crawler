@@ -9,25 +9,37 @@
 
 int main() {
 
-  char http_header[256] = "HTTP/1.1 200 OK\r\n\n";
-  char server_message[256] = "Hello, you reached the Server!";
-  strcat(http_header, server_message);
+  char http_header[2048] = "HTTP/1.1 200 OK\r\n\n";
+  //Caso de teste no terminal, apenas TCP, sem utilizar o protocolo HTTP
+  //char server_message[256] = "Hello, you reached the Server!";
+  //strcat(http_header, server_message);
+
+  //Abre arquivo
+  FILE *html_data;
+  html_data = fopen("index.html", "r");
+
+  //Lê o conteúdo do arquivo
+  char response_data[1024];
+  fgets(response_data, 1024, html_data);
+
+  //Concatena a resposta no http_header
+  strcat(http_header, response_data);
 
   //Cria Socket
   int server_socket;
-  server_socket = socket(AF_INET,SOCK_STREAM,0);
+  server_socket = socket(AF_INET, SOCK_STREAM, 0);
 
   //Define o endereço do Socket
   int server_ip = INADDR_ANY;
   struct sockaddr_in server_address;
   server_address.sin_family = AF_INET;
-  server_address.sin_port = htons(8228);
+  server_address.sin_port = htons(8001);
   server_address.sin_addr.s_addr = server_ip;
 
   //Associa o IP e a porta ao socket
   bind(server_socket, (struct sockaddr*) &server_address, sizeof(server_address));
 
-  listen(server_socket, 0);
+  listen(server_socket, 5);
 
   int client_socket;
   //Deixa o servidor escutando
@@ -35,10 +47,11 @@ int main() {
     client_socket = accept(server_socket, NULL, NULL);
     //Envia a mensagem
     send(client_socket, http_header, sizeof(http_header), 0);
+    //Encerra conexão
+    close(client_socket);
+
   }
 
-    //Encerra conexão
-    close(server_socket);
 
   return 0;
 }
