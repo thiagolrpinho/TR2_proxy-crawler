@@ -41,12 +41,18 @@ int main() {
 
   listen(server_socket, 5);
 
+
+  char request[1024];
   int client_socket;
   //Deixa o servidor escutando
   while(1) {
     client_socket = accept(server_socket, NULL, NULL);
+    //Recebe o request
+    recv(client_socket, request, sizeof(request), 0);
     //Envia a mensagem
     send(client_socket, http_header, sizeof(http_header), 0);
+
+    printf("%s \n ----------------------------------------\n",request);
     //Encerra conexão
     close(client_socket);
 
