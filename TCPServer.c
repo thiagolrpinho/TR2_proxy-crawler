@@ -39,7 +39,7 @@ int main() {
   //Associa o IP e a porta ao socket
   bind(server_socket, (struct sockaddr*) &server_address, sizeof(server_address));
 
-  listen(server_socket, 5);
+  listen(server_socket, 3);
 
 
   char request[1024];
