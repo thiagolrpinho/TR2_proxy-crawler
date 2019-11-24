@@ -82,7 +82,7 @@ int main() {
     //Recebe o request
     recv(client_socket, request, sizeof(request), 0);
     //Printa o request no terminal
-    printf("%s \n ----------------------------------------\n",request);
+    printf("Request: %s \n ----------------------------------------\n",request);
 
     /* Executa expressão regular de método*/
     connect_reti = regexec(&connect_regex, request, 0, NULL, 0);
@@ -98,10 +98,9 @@ int main() {
       if(connection_status == -1){
         printf("Ocorreu um erro ao tentar estabalecer conexão com o socket");
       }
-      //Teste//
+      //Teste//Envia a requisição ao destino,pelo Socket de Envio, e pega a resposta
       send(sender_socket, request, sizeof(request), 0);
       recv(sender_socket, &request, sizeof(request), 0);
-      printf("%s \n ----------------------------------------\n",request);
       close(sender_socket);
 
 
@@ -122,8 +121,9 @@ int main() {
     }
 
 
-    //Envia a mensagem
-    send(client_socket, http_header, sizeof(http_header), 0);
+    //Envia a mensagem pelo Socket Receptor
+    send(client_socket, request, sizeof(request), 0);
+    printf("Response: %s \n ----------------------------------------\n",request);
 
     /* Free memory allocated to the pattern buffer by regcomp() */
     //Encerra conexão
