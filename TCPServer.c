@@ -33,7 +33,7 @@ int main() {
   int server_ip = INADDR_ANY;
   struct sockaddr_in server_address;
   server_address.sin_family = AF_INET;
-  server_address.sin_port = htons(8001);
+  server_address.sin_port = htons(8002);
   server_address.sin_addr.s_addr = server_ip;
 
   //Associa o IP e a porta ao socket
@@ -52,7 +52,8 @@ int main() {
     //Envia a mensagem
     send(client_socket, http_header, sizeof(http_header), 0);
 
-    printf("%s \n ----------------------------------------\n",request);
+    printf("Request: %s \n ----------------------------------------\n",request);
+
     //Encerra conexão
     close(client_socket);
 
