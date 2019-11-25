@@ -79,6 +79,7 @@ int main() {
   while(1) {
     //Limpa a variavel que guarda o método do request/response
     memset(method, 0, sizeof method);
+
     //Aceita conexão pelo Socket de Recepção
     client_socket = accept(server_socket, NULL, NULL);
     //Recebe o request
@@ -86,18 +87,18 @@ int main() {
     //Printa o request no terminal
     printf("Request: %s \n ----------------------------------------\n",request);
 
+    //Cria o socket cliente como Socket de Envio, para fazer a requisição ao servidor de destino
+    int sender_socket = create_client_socket("127.0.0.1", 8002);
+    //Teste//Envia a requisição ao destino,pelo Socket de Envio, e pega a resposta
+    send(sender_socket, request, sizeof(request), 0);
+    recv(sender_socket, &request, sizeof(request), 0);
+    close(sender_socket);
+
     /* Executa expressão regular de método*/
+    /*
     connect_reti = regexec(&connect_regex, request, 0, NULL, 0);
     if (!connect_reti) {
       printf("Método: Connect\n");
-      //Cria o socket cliente como Socket de Envio, para fazer a requisição ao servidor de destino
-      int sender_socket = create_client_socket("127.0.0.1", 8002);
-
-      //Teste//Envia a requisição ao destino,pelo Socket de Envio, e pega a resposta
-      send(sender_socket, request, sizeof(request), 0);
-      recv(sender_socket, &request, sizeof(request), 0);
-      close(sender_socket);
-
 
     }
     else if (connect_reti == REG_NOMATCH) {
@@ -113,19 +114,18 @@ int main() {
         regerror(connect_reti, &connect_regex, msgbuf, sizeof(msgbuf));
         printf("Regex match failed: %s\n", msgbuf);
         exit(1);
-    }
+    }*/
 
 
     //Envia a mensagem pelo Socket Receptor
     send(client_socket, request, sizeof(request), 0);
     printf("Response: %s \n ----------------------------------------\n",request);
 
-    /* Free memory allocated to the pattern buffer by regcomp() */
     //Encerra conexão
     close(client_socket);
 
   }
-
+  /* Free memory allocated to the pattern buffer by regcomp() */
   regfree(&connect_regex);
   return 0;
 }
