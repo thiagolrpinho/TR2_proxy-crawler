@@ -1,11 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <strings.h>
 #include <string.h>
 
 #include <sys/socket.h>
 #include <sys/types.h>
 
 #include <netinet/in.h>
+#include <netdb.h>
 #include <arpa/inet.h>
 
 #include <regex.h>
@@ -18,6 +20,16 @@ int create_client_socket(char* address,int port){
   client_address.sin_family = AF_INET;
   client_address.sin_port = htons(port);
   client_address.sin_addr.s_addr = inet_addr(address);
+
+
+  //Tentativa de pegar o ip do servidor de destino pela url. Obs mudar o parametro para (char* url, int port)
+  /*
+  struct hostent *host_url;
+  host_url = gethostbyname(url);
+  printf("\nHost: %s \n", host_url->h_addr);
+  bcopy(host_url->h_addr, &client_address.sin_addr.s_addr, host_url->h_length);
+  */
+
   //Connecta/Verifica conexão
   int connection_status = connect(client_socket, (struct sockaddr *) &client_address, sizeof(client_address));
   if(connection_status == -1){
@@ -44,22 +56,6 @@ int create_server_socket(char* address,int port){
 
 int main() {
 
-  char http_header[2048] = "HTTP/1.1 200 OK\r\n\n";
-  //Caso de teste no terminal, apenas TCP, sem utilizar o protocolo HTTP
-  //char server_message[256] = "Hello, you reached the Server!";
-  //strcat(http_header, server_message);
-
-  //Abre arquivo
-  FILE *html_data;
-  html_data = fopen("index.html", "r");
-
-  //Lê o conteúdo do arquivo
-  char response_data[1024];
-  fgets(response_data, 1024, html_data);
-
-  //Concatena a resposta no http_header
-  strcat(http_header, response_data);
-
   //Cria e Compila a Regex que vai ser utilizada para minerar os dados do request/response
   regex_t connect_regex;
   int connect_reti;
@@ -74,7 +70,7 @@ int main() {
   int server_socket = create_server_socket("127.0.0.1",8001);
 
   char method[7];
-  char request[1024];
+  char request[4096];
   int client_socket;
   while(1) {
     //Limpa a variavel que guarda o método do request/response
@@ -84,11 +80,18 @@ int main() {
     client_socket = accept(server_socket, NULL, NULL);
     //Recebe o request
     recv(client_socket, request, sizeof(request), 0);
-    //Printa o request no terminal
-    printf("Request: %s \n ----------------------------------------\n",request);
+
 
     //Cria o socket cliente como Socket de Envio, para fazer a requisição ao servidor de destino
     int sender_socket = create_client_socket("127.0.0.1", 8002);
+
+
+
+    //Printa o request no terminal
+    printf("Request: %s \n ----------------------------------------\n",request);
+
+
+
     //Teste//Envia a requisição ao destino,pelo Socket de Envio, e pega a resposta
     send(sender_socket, request, sizeof(request), 0);
     recv(sender_socket, &request, sizeof(request), 0);

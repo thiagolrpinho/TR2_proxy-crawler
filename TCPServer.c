@@ -3,6 +3,7 @@
 #include <string.h>
 
 #include <sys/socket.h>
+#include <arpa/inet.h>
 #include <sys/types.h>
 
 #include <netinet/in.h>
@@ -16,21 +17,26 @@ int main() {
 
   //Abre arquivo
   FILE *html_data;
-  html_data = fopen("index.html", "r");
+  html_data = fopen("aprender.html", "r");
 
   //Lê o conteúdo do arquivo
+  //fseek(html_data,0L ,SEEK_END);
+  //long int file_char_number = ftell(html_data);
   char response_data[1024];
   fgets(response_data, 1024, html_data);
 
   //Concatena a resposta no http_header
   strcat(http_header, response_data);
 
+  //Fecha o arquivo
+  fclose(html_data);
+
   //Cria Socket
   int server_socket;
   server_socket = socket(AF_INET, SOCK_STREAM, 0);
 
   //Define o endereço do Socket
-  int server_ip = INADDR_ANY;
+  int server_ip = inet_addr("127.0.0.1");
   struct sockaddr_in server_address;
   server_address.sin_family = AF_INET;
   server_address.sin_port = htons(8002);
