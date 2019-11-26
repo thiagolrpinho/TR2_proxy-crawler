@@ -71,19 +71,20 @@ int main() {
 
   char method[7];
   char request[40960];
-  int client_socket;
+  int internal_socket;
+  int external_socket;
   while(1) {
     //Limpa a variavel que guarda o método do request/response
     memset(method, 0, sizeof method);
 
     //Aceita conexão pelo Socket de Recepção
-    client_socket = accept(server_socket, NULL, NULL);
+    internal_socket = accept(server_socket, NULL, NULL);
     //Recebe o request
-    recv(client_socket, request, sizeof(request), 0);
+    recv(internal_socket, request, sizeof(request), 0);
 
 
     //Cria o socket cliente como Socket de Envio, para fazer a requisição ao servidor de destino
-    int sender_socket = create_client_socket("127.0.0.1", 8002);
+    external_socket = create_client_socket("127.0.0.1", 8002);
 
 
 
@@ -93,9 +94,9 @@ int main() {
 
 
     //Teste//Envia a requisição ao destino,pelo Socket de Envio, e pega a resposta
-    send(sender_socket, request, sizeof(request), 0);
-    recv(sender_socket, &request, sizeof(request), 0);
-    close(sender_socket);
+    send(external_socket, request, sizeof(request), 0);
+    recv(external_socket, &request, sizeof(request), 0);
+    close(external_socket);
 
     /* Executa expressão regular de método*/
     /*
@@ -121,11 +122,11 @@ int main() {
 
 
     //Envia a mensagem pelo Socket Receptor
-    send(client_socket, request, sizeof(request), 0);
+    send(internal_socket, request, sizeof(request), 0);
     printf("Response: %s \n ----------------------------------------\n",request);
 
     //Encerra conexão
-    close(client_socket);
+    close(internal_socket);
 
   }
   /* Free memory allocated to the pattern buffer by regcomp() */
