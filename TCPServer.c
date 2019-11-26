@@ -10,7 +10,7 @@
 
 int main() {
 
-  char http_header[2048] = "HTTP/1.1 200 OK\r\n\n";
+  char http_header[43008] = "HTTP/1.1 200 OK\r\n\n";
   //Caso de teste no terminal, apenas TCP, sem utilizar o protocolo HTTP
   //char server_message[256] = "Hello, you reached the Server!";
   //strcat(http_header, server_message);
@@ -22,8 +22,8 @@ int main() {
   //Lê o conteúdo do arquivo
   //fseek(html_data,0L ,SEEK_END);
   //long int file_char_number = ftell(html_data);
-  char response_data[1024];
-  fgets(response_data, 1024, html_data);
+  char response_data[40960];
+  fgets(response_data, 40960, html_data);
 
   //Concatena a resposta no http_header
   strcat(http_header, response_data);

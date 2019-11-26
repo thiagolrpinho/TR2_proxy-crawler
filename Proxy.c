@@ -70,7 +70,7 @@ int main() {
   int server_socket = create_server_socket("127.0.0.1",8001);
 
   char method[7];
-  char request[4096];
+  char request[40960];
   int client_socket;
   while(1) {
     //Limpa a variavel que guarda o método do request/response
