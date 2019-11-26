@@ -26,7 +26,7 @@ int create_client_socket(char* address,int port){
   /*
   struct hostent *host_url;
   host_url = gethostbyname(url);
-  printf("\nHost: %s \n", host_url->h_addr);
+  printf("\nHost: %s \n", inet_ntoa(*((struct in_addr *)host_url->h_addr)));
   bcopy(host_url->h_addr, &client_address.sin_addr.s_addr, host_url->h_length);
   */
 
@@ -67,10 +67,11 @@ int main() {
   }
 
   //Cria socket de Recepção e deixa listening
-  int server_socket = create_server_socket("127.0.0.1",8001);
+  int server_socket = create_server_socket("127.0.0.1",8080);
 
   char method[7];
   char request[40960];
+  char response[40960];
   int internal_socket;
   int external_socket;
   while(1) {
@@ -82,20 +83,18 @@ int main() {
     //Recebe o request
     recv(internal_socket, request, sizeof(request), 0);
 
+    //Printa o request no terminal
+    printf("Request: %s \n ----------------------------------------\n",request);
+
 
     //Cria o socket cliente como Socket de Envio, para fazer a requisição ao servidor de destino
     external_socket = create_client_socket("127.0.0.1", 8002);
 
 
 
-    //Printa o request no terminal
-    printf("Request: %s \n ----------------------------------------\n",request);
-
-
-
     //Teste//Envia a requisição ao destino,pelo Socket de Envio, e pega a resposta
     send(external_socket, request, sizeof(request), 0);
-    recv(external_socket, &request, sizeof(request), 0);
+    recv(external_socket, &response, sizeof(response), 0);
     close(external_socket);
 
     /* Executa expressão regular de método*/
@@ -122,11 +121,15 @@ int main() {
 
 
     //Envia a mensagem pelo Socket Receptor
-    send(internal_socket, request, sizeof(request), 0);
-    printf("Response: %s \n ----------------------------------------\n",request);
+    send(internal_socket, response, sizeof(response), 0);
+    printf("Response: %s \n ----------------------------------------\n",response);
 
     //Encerra conexão
     close(internal_socket);
+
+    //Limpa a variaveis de request/response
+    memset(request, 0, sizeof(request));
+    memset(response, 0, sizeof(response));
 
   }
   /* Free memory allocated to the pattern buffer by regcomp() */
