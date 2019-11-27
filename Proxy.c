@@ -69,14 +69,14 @@ int main() {
   //Cria socket de Recepção e deixa listening
   int server_socket = create_server_socket("127.0.0.1",8080);
 
-  char method[7];
+  char host_domain_url[30];
   char request[40960];
   char response[40960];
   int internal_socket;
   int external_socket;
   while(1) {
     //Limpa a variavel que guarda o método do request/response
-    memset(method, 0, sizeof method);
+    memset(host_domain_url, 0, sizeof host_domain_url);
 
     //Aceita conexão pelo Socket de Recepção
     internal_socket = accept(server_socket, NULL, NULL);
@@ -88,8 +88,7 @@ int main() {
 
 
     //Cria o socket cliente como Socket de Envio, para fazer a requisição ao servidor de destino
-    external_socket = create_client_socket("104.28.12.216", 443);
-
+    external_socket = create_client_socket("104.28.13.216", 80);
 
 
     //Teste//Envia a requisição ao destino,pelo Socket de Envio, e pega a resposta
@@ -117,7 +116,8 @@ int main() {
         regerror(connect_reti, &connect_regex, msgbuf, sizeof(msgbuf));
         printf("Regex match failed: %s\n", msgbuf);
         exit(1);
-    }*/
+    }
+    */
 
 
     //Envia a mensagem pelo Socket Receptor
