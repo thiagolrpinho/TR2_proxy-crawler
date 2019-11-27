@@ -1,5 +1,4 @@
-	
-#	Name	of	the	project
+	#	Name	of	the	project
 PROJ_NAME=Proxy
 
 #Directories
@@ -12,12 +11,17 @@ _C_SOURCE=$(wildcard	$(patsubst %,$(SOURCE_DIRECTORY)/%,*.c))
 
 #	.h	files
 _DEPS=$(wildcard	$(patsubst %,$(INCLUDE_DIRECTORY)/%, *.h))
-	
+
 #	Object	files
-OBJ=$(subst	.c,.o,$(subst	src,objects,$(_C_SOURCE)))
-	
+OBJECT_SOURCES=$(subst	.c,.o,$(subst	$(SOURCE_DIRECTORY),$(OBJECTS_DIRECTORY),$(_C_SOURCE)))
+
+# Variables to make the code more legible	
+
+OBJECT_FILES= $(patsubst %,$(OBJECTS_DIRECTORY)/%,%.o)
+C_FILES = $(patsubst %,$(SOURCE_DIRECTORY)/%,%.c)
+
 #	Compiler	and	linker
-CC=gcc
+CC=g++
 	
 #	Flags	for	compiler
 CFLAGS  = -Wall -I$(INCLUDE_DIRECTORY) -c
@@ -28,20 +32,19 @@ RM	=	rm	-rf
 #
 #	Compilation	and	linking
 #
+#This is the first rule, it verfies if objFolder rule was done and if PROJ_NAME rule was done
 all:	objFolder	$(PROJ_NAME)
-	
-$(PROJ_NAME):	$(OBJ)
+
+# Then it looks for the PROJ_NAME rule and it verifies if the OBJ_SOURCES files exists, if not it follows that rule
+# If they do exist, it compiles using the chosen compiler, the proj_name as the program name and using the obj_sources files
+$(PROJ_NAME):	$(OBJECT_SOURCES)
 	@	echo	'Building	binary	using	GCC	linker:	$@'
 	$(CC)	$^	-o	$@
 	@	echo	'Finished	building	binary:	$@'
 	@	echo	'	'
-	
-$(patsubst %,$(OBJECTS_DIRECTORY)/%,%.o):	$(patsubst %,$(SOURCE_DIRECTORY)/%,%.c)	$(_DEPS)
-	@	echo	'Building	target	using	GCC	compiler:	$<'
-	$(CC)	$<	$(CFLAGS)	-o	$@
-	@	echo	'	'
-	
-$(patsubst %,$(OBJECTS_DIRECTORY)/%,main.o):	$(patsubst %,$(SOURCE_DIRECTORY)/%,main.c)	$(_DEPS)
+
+# If not done, then it verifies if the source files exists and then compiles the source files	
+$(OBJECT_FILES):	$(C_FILES)	$(_DEPS)
 	@	echo	'Building	target	using	GCC	compiler:	$<'
 	$(CC)	$<	$(CFLAGS)	-o	$@
 	@	echo	'	'
