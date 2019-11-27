@@ -88,7 +88,7 @@ int main() {
 
 
     //Cria o socket cliente como Socket de Envio, para fazer a requisição ao servidor de destino
-    external_socket = create_client_socket("127.0.0.1", 8002);
+    external_socket = create_client_socket("104.28.12.216", 443);
 
 
 
