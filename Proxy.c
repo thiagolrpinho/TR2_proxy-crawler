@@ -4,6 +4,7 @@
 #include <string.h>
 
 #include <sys/socket.h>
+#include <unistd.h>
 #include <sys/types.h>
 
 #include <netinet/in.h>
@@ -13,26 +14,29 @@
 #include <regex.h>
 #include "socket_handler.h"
 
+
 int main() {
 
   //Cria e Compila a Regex que vai ser utilizada para minerar os dados do request/response
   regex_t connect_regex;
   int connect_reti;
+  int server_socket, external_socket, internal_socket;
   char msgbuf[100];
+  char host_domain_url[30];
+  char request[40960];
+  char response[40960];
+
   connect_reti = regcomp(&connect_regex, "CONNECT", 0);
-  if (connect_reti) {
+  if (connect_reti) { 
       printf("Could not compile regex\n");
       exit(1);
   }
 
   //Cria socket de Recepção e deixa listening
-  int server_socket = create_server_socket("127.0.0.1",8080);
+  do { 
+    server_socket = create_server_socket("127.0.0.1",8080);
+  } while(server_socket == -1 );
 
-  char host_domain_url[30];
-  char request[40960];
-  char response[40960];
-  int internal_socket;
-  int external_socket;
   while(1) {
     //Limpa a variavel que guarda o método do request/response
     memset(host_domain_url, 0, sizeof host_domain_url);
