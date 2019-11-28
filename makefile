@@ -7,18 +7,18 @@ SOURCE_DIRECTORY	=./src
 OBJECTS_DIRECTORY = ./objects
 
 #	.c	files
-_C_SOURCE=$(wildcard	$(patsubst %,$(SOURCE_DIRECTORY)/%,*.c))
+_C_SOURCE=$(wildcard	$(patsubst %,$(SOURCE_DIRECTORY)/%,*.cpp))
 
 #	.h	files
-_DEPS=$(wildcard	$(patsubst %,$(INCLUDE_DIRECTORY)/%, *.h))
+_DEPS=$(wildcard	$(patsubst %,$(INCLUDE_DIRECTORY)/%, *.hpp))
 
 #	Object	files
-OBJECT_SOURCES=$(subst	.c,.o,$(subst	$(SOURCE_DIRECTORY),$(OBJECTS_DIRECTORY),$(_C_SOURCE)))
+OBJECT_SOURCES=$(subst	.cpp,.o,$(subst	$(SOURCE_DIRECTORY),$(OBJECTS_DIRECTORY),$(_C_SOURCE)))
 
 # Variables to make the code more legible	
 
 OBJECT_FILES= $(patsubst %,$(OBJECTS_DIRECTORY)/%,%.o)
-C_FILES = $(patsubst %,$(SOURCE_DIRECTORY)/%,%.c)
+C_FILES = $(patsubst %,$(SOURCE_DIRECTORY)/%,%.cpp)
 
 #	Compiler	and	linker
 CC=g++
