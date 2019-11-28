@@ -14,28 +14,18 @@
 #include <netdb.h>
 #include <arpa/inet.h>
 
-#include <regex.h>
 #include "socket_handler.hpp"
 
 
 int main() {
 
-  //Cria e Compila a Regex que vai ser utilizada para minerar os dados do request/response
-  regex_t connect_regex;
-  int connect_reti;
+  //Cria e Compila a Regex que vai ser utilizada para minerar os dados do _char/response
   int server_socket, external_socket, internal_socket;
-  char msgbuf[100];
   char host_domain_url[30];
-  char request[40960];
-  char response[40960];
-  std::string proceed_flag;
-  std::string pao = "Pão é bom";
-
-  connect_reti = regcomp(&connect_regex, "CONNECT", 0);
-  if (connect_reti) { 
-      printf("Could not compile regex\n");
-      exit(1);
-  }
+  char request_char[40960];
+  char response_char[40960];
+  std::string proceed_flag, request, response, url, host;
+  size_t coordenada_indice_get, coordenada_indice_http, coordenada_indice_host, coordenada_indice_fim_linha_host;
 
   //Cria socket de Recepção e deixa listening
   do { 
@@ -50,11 +40,42 @@ int main() {
     //Aceita conexão pelo Socket de Recepção
     internal_socket = accept(server_socket, NULL, NULL);
     //Recebe o request
-    recv(internal_socket, request, sizeof(request), 0);
+    recv(internal_socket, request_char, sizeof(request_char), 0);
+    request = request_char;
 
     //Printa o request no terminal
     std::cout << "Request recebida: " << std::endl;
     std::cout << request << std::endl;
+
+    coordenada_indice_get = request.find("GET", 0);
+    std::cout << coordenada_indice_get << std::endl;
+    if ( coordenada_indice_get == std::string::npos )
+    {
+      coordenada_indice_get = request.find("POST", 0);
+      if(coordenada_indice_get != std::string::npos) coordenada_indice_get += 5;
+    } else {
+      coordenada_indice_get += 4;
+    }
+    std::cout << coordenada_indice_get << std::endl;
+
+    coordenada_indice_http = request.find(" HTTP/1", 0 );
+    std::cout << coordenada_indice_http << std::endl;
+    if( coordenada_indice_http != std::string::npos && coordenada_indice_get != std::string::npos)
+    {
+      url = request.substr(coordenada_indice_get, coordenada_indice_http - coordenada_indice_get);
+    }
+
+    std::cout << "Url é:" << url << std::endl;
+
+    coordenada_indice_host = request.find("Host:", 0 ) + 6;
+    coordenada_indice_fim_linha_host = request.find("\n", coordenada_indice_host);
+    std::cout << coordenada_indice_fim_linha_host << " e " << coordenada_indice_host << std::endl;
+    if( coordenada_indice_host != std::string::npos && coordenada_indice_fim_linha_host != std::string::npos)
+    { 
+      host = request.substr(coordenada_indice_host, coordenada_indice_fim_linha_host - coordenada_indice_host);
+    }
+    std::cout << "Host é:" << host << std::endl;
+
 
 
     //Cria o socket cliente como Socket de Envio, para fazer a requisição ao servidor de destino
@@ -63,53 +84,28 @@ int main() {
 
     
     //Teste//Envia a requisição ao destino,pelo Socket de Envio, e pega a resposta
-    send(external_socket, request, sizeof(request), 0);
-    recv(external_socket, &response, sizeof(response), 0);
+    send(external_socket, request_char, sizeof(request_char), 0);
+    recv(external_socket, &response_char, sizeof(response_char), 0);
     std::cout << "Recebendo Response" << std::endl;
     shutdown(external_socket, SHUT_RDWR);
     close(external_socket);
 
-    /* Executa expressão regular de método*/
-    /*
-    connect_reti = regexec(&connect_regex, request, 0, NULL, 0);
-    if (!connect_reti) {
-      printf("Método: Connect\n");
-
-    }
-    else if (connect_reti == REG_NOMATCH) {
-        printf("No match");
-    }
-    else if (connect_reti == REG_NOMATCH) {
-        printf("No match");
-    }
-    else if (connect_reti == REG_NOMATCH) {
-        printf("No match");
-    }
-    else {
-        regerror(connect_reti, &connect_regex, msgbuf, sizeof(msgbuf));
-        printf("Regex match failed: %s\n", msgbuf);
-        exit(1);
-    }
-    */
-
-
     //Envia a mensagem pelo Socket Receptor
-    send(internal_socket, response, sizeof(response), 0);
+    send(internal_socket, response_char, sizeof(response_char), 0);
     std::cout << "Response enviada: " << std::endl;
-    std::cout << response << std::endl;
+    std::cout << response_char << std::endl;
 
     //Encerra conexão
     shutdown(internal_socket, SHUT_RDWR);
     close(internal_socket);
 
     //Limpa a variaveis de request/response
-    memset(request, 0, sizeof(request));
-    memset(response, 0, sizeof(response));
+    memset(request_char, 0, sizeof(request_char));
+    memset(response_char, 0, sizeof(response_char));
 
     std::cin >> proceed_flag;
   }
-  /* Free memory allocated to the pattern buffer by regcomp() */
-  regfree(&connect_regex);
+
   shutdown(server_socket, SHUT_RDWR);
   return 0;
 }
