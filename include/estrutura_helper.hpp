@@ -6,11 +6,18 @@ separação de dados extraídos das requisições e respostas
 #include <string>
 #include <string.h>
 #include <strings.h>
-#include <algorithm> 
+#include <algorithm>
+#include <sys/types.h>
+#include <sys/stat.h>
 using namespace std;
 
 #ifndef ESTRUTURA_HELPER_HPP
 #define ESTRUTURA_HELPER_HPP
+
+#define GET_STRING_SIZE (4)
+#define POST_STRING_SIZE (5)
+#define HTTP_1_STRING_SIZE (6)
+#define CACHED_FILES_FOLDER "./cached_files/"
 
 struct estrutura_request {
   char host[350];
@@ -25,6 +32,19 @@ estrutura_request request_parser( string request );
 
 // Estrutura recebe um host e retorna se ele é válido
 bool is_valid_host(const string host );
+
+// Cria um GET usando a URL passada e retorna na forma de array de char
+string create_get_request( const string original_url );
+
+
+// Cria uma pasta dentro da pasta cached_files usando a string passada como nome:
+bool create_folder(const string nome_pasta );
+
+// Valida se há uma pasta dentro da pasta cached_files para um dado nome
+bool exist_folder(const string nome_pasta );
+
+// Armazena um caminho completo e cria as pastas necessárias para cada subdominio
+bool store_domain(string complete_path);
 
 
 #endif

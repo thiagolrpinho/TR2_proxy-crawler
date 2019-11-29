@@ -18,12 +18,10 @@ int main() {
 
   hostent *destine_server;
   estrutura_request request_data;
-  char host_char[30];
   int server_socket, external_socket, internal_socket;
   char host_domain_url[30];
   char request_char[40960];
   char response_char[40960];
-  const char *host_name_temporary;
   string proceed_flag, request, response, url, host;
 
   //Cria socket de Recepção e deixa listening
@@ -57,13 +55,16 @@ int main() {
       shutdown(server_socket, SHUT_RDWR);
       break;
     }
+    response = create_get_request(request_data.url );
+    cout << response << endl;
+    strncpy(response_char, response.c_str(), response.size() );
 
     //Cria o socket cliente como Socket de Envio, para fazer a requisição ao servidor de destino
     external_socket = create_client_socket(inet_ntoa( (struct in_addr) *((struct in_addr *) destine_server->h_addr_list[0])), 80);
 
+    store_domain(request_data.complete_path);
 
-
-    //Teste//Envia a requisição ao destino,pelo Socket de Envio, e pega a resposta
+    //Envia a requisição ao destino,pelo Socket de Envio, e pega a resposta
     send(external_socket, request_char, sizeof(request_char), 0);
     recv(external_socket, &response_char, sizeof(response_char), 0);
     cout << "Recebendo Response" << endl;

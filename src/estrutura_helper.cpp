@@ -1,8 +1,6 @@
 #include "estrutura_helper.hpp"
 
-#define GET_STRING_SIZE (4);
-#define POST_STRING_SIZE (5);
-#define HTTP_1_STRING_SIZE (6);
+
 
 
 estrutura_request request_parser( string request )
@@ -78,3 +76,103 @@ bool is_valid_host(const string host )
 
   return site_valid;
 }
+
+
+
+string create_get_request( const string original_url )
+{
+  string url;
+  url = "GET " + original_url + " \r\n";
+
+
+  return url;
+}
+
+bool create_folder(string nome_pasta)
+{
+  int creation_result;
+  string nome_pasta_com_cached = CACHED_FILES_FOLDER + nome_pasta;
+  if ((creation_result = mkdir( nome_pasta_com_cached.c_str(), S_IRUSR | S_IWUSR | S_IXUSR)) != 0)
+  {
+    if (creation_result != 0 && errno != EEXIST)
+    {
+      cout << "mkdir error: " << strerror(errno) << endl;
+      return false;
+    }
+  }
+  return true;
+}
+
+bool exist_folder(const string nome_pasta )
+{
+  bool pasta_existe = false;
+  struct stat st = {0};
+  string nome_pasta_com_cached = CACHED_FILES_FOLDER + nome_pasta;
+
+  if (stat(nome_pasta_com_cached.c_str(), &st) != -1) pasta_existe = true;
+
+  return pasta_existe ;
+}
+
+bool store_domain(string complete_path)
+{ 
+  bool succesfull_stored = true;
+  string extracted_subdomain, acummulated_sub_domain = "", delimiter = "/";
+  size_t first_ocurrence, second_ocurrence;
+  first_ocurrence = 0;
+  second_ocurrence = complete_path.find(delimiter);
+
+  while(second_ocurrence != string::npos and first_ocurrence != string::npos )
+  { 
+    extracted_subdomain =  complete_path.substr(first_ocurrence, second_ocurrence - first_ocurrence + 1 );
+    acummulated_sub_domain = acummulated_sub_domain + extracted_subdomain;
+    cout << acummulated_sub_domain <<  "!Abaco!" << endl;
+     // Primeiro verificamos se existe a pasta com esse caminho acumulado
+    if( exist_folder(acummulated_sub_domain) == false)
+    {
+      // Se não existir, criamos a pasta
+      if (create_folder(acummulated_sub_domain) == false)succesfull_stored = false;
+    } 
+    // Se o segundo indice já estiver no final então não há mais o que procurar
+    if ( second_ocurrence == complete_path.size() - 1 )
+    {
+      first_ocurrence = string::npos;
+    } else {
+      // Caso não esteja, continua buscando
+      first_ocurrence = second_ocurrence + 1;
+    }
+    second_ocurrence = complete_path.find(delimiter, first_ocurrence + 1);
+    // Caso não haja mais delimitadores, devemos extrair somente até o final
+    if (second_ocurrence == string::npos)
+    {
+      second_ocurrence = complete_path.size() - 1;
+    }
+  } 
+
+  return succesfull_stored;
+}
+/*
+if ((dir_result = mkdir(get.host, S_IRUSR | S_IWUSR | S_IXUSR)) != 0)
+    {
+      if (dir_result != 0 && errno != EEXIST)
+      {
+        printf("mkdir error: %s", strerror(errno));
+      }
+    }
+    find_subdir(get);
+    strcat(path, get.host);
+    strcat(path, get.file_path);
+    index = fopen(path, "w");
+
+    while (read(sock, buffer, BUFFER_SIZE - 1) != 0){
+      fputs(buffer,index);
+      bzero(buffer, BUFFER_SIZE);
+    }
+
+    fclose(index);
+    sendCachedFile(get.complete_path, new_socket);
+    shutdown(sock, SHUT_RDWR);
+    close(sock);
+    printf("[Proxy] No cahced file! Downloaded and sent!");
+  }
+  */
