@@ -1,9 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <strings.h>
-#include <string.h>
-#include <string>
-#include <iostream>
+
 
 #include <sys/socket.h>
 #include <unistd.h>
@@ -14,18 +11,20 @@
 #include <arpa/inet.h>
 
 #include "socket_handler.hpp"
+#include "estrutura_helper.hpp"
 
 
 int main() {
 
   hostent *destine_server;
+  estrutura_request request_data;
   char host_char[30];
   int server_socket, external_socket, internal_socket;
   char host_domain_url[30];
   char request_char[40960];
   char response_char[40960];
+  const char *host_name_temporary;
   std::string proceed_flag, request, response, url, host;
-  size_t coordenada_indice_get, coordenada_indice_http, coordenada_indice_host, coordenada_indice_fim_linha_host;
 
   //Cria socket de Recepção e deixa listening
   do {
@@ -43,46 +42,20 @@ int main() {
     recv(internal_socket, request_char, sizeof(request_char), 0);
     request = request_char;
 
-    //Printa o request no terminal
-    std::cout << "Request recebida: " << std::endl;
-    std::cout << request << std::endl;
+    request_data = request_parser(request);
 
-    coordenada_indice_get = request.find("GET", 0);
-    std::cout << coordenada_indice_get << std::endl;
-    if ( coordenada_indice_get == std::string::npos )
-    {
-      coordenada_indice_get = request.find("POST", 0);
-      if(coordenada_indice_get != std::string::npos) coordenada_indice_get += 5;
+    //Pulando sites de redirecionamento
+    if( request_data.host == "detectportal.firefox.com" ) continue;
+
+    destine_server = gethostbyname(  request_data.host );
+    if( destine_server != NULL ) {
+      std::cout << "Endereço ip do Host é:" << inet_ntoa( (struct in_addr) *((struct in_addr *) destine_server->h_addr_list[0])) << std::endl;
     } else {
-      coordenada_indice_get += 4;
+      std::cout << "Falha ao capturar o ip de: " << request_data.host << std::endl;
+      shutdown(internal_socket, SHUT_RDWR);
+      shutdown(server_socket, SHUT_RDWR);
+      break;
     }
-    std::cout << coordenada_indice_get << std::endl;
-
-    coordenada_indice_http = request.find(" HTTP/1", 0 );
-    std::cout << coordenada_indice_http << std::endl;
-    if( coordenada_indice_http != std::string::npos && coordenada_indice_get != std::string::npos)
-    {
-      url = request.substr(coordenada_indice_get, coordenada_indice_http - coordenada_indice_get);
-    }
-
-    std::cout << "Url é:" << url << std::endl;
-
-    coordenada_indice_host = request.find("Host:", 0 ) + 6;
-    coordenada_indice_fim_linha_host = request.find("\n", coordenada_indice_host);
-    std::cout << coordenada_indice_fim_linha_host << " e " << coordenada_indice_host << std::endl;
-    if( coordenada_indice_host != std::string::npos && coordenada_indice_fim_linha_host != std::string::npos)
-    {
-      host = request.substr(coordenada_indice_host, coordenada_indice_fim_linha_host - coordenada_indice_host);
-    }
-    std::cout << "Host é:" << host << std::endl;
-
-    //Atribuindo url à variavel char *host_char
-    strcpy(host_char, "brasilia.deboa.com");
-
-
-    destine_server = gethostbyname(host_char);
-    std::cout << "Endereço ip do Host é:" << inet_ntoa( (struct in_addr) *((struct in_addr *) destine_server->h_addr_list[0])) << std::endl;
-
 
     //Cria o socket cliente como Socket de Envio, para fazer a requisição ao servidor de destino
     external_socket = create_client_socket(inet_ntoa( (struct in_addr) *((struct in_addr *) destine_server->h_addr_list[0])), 80);
