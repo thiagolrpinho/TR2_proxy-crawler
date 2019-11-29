@@ -5,7 +5,6 @@
 #include <string>
 #include <iostream>
 
-
 #include <sys/socket.h>
 #include <unistd.h>
 #include <sys/types.h>
@@ -19,7 +18,8 @@
 
 int main() {
 
-  //Cria e Compila a Regex que vai ser utilizada para minerar os dados do _char/response
+  hostent *destine_server;
+  char host_char[30];
   int server_socket, external_socket, internal_socket;
   char host_domain_url[30];
   char request_char[40960];
@@ -28,8 +28,8 @@ int main() {
   size_t coordenada_indice_get, coordenada_indice_http, coordenada_indice_host, coordenada_indice_fim_linha_host;
 
   //Cria socket de Recepção e deixa listening
-  do { 
-    server_socket = create_server_socket("127.0.0.1",8080);
+  do {
+    server_socket = create_server_socket("127.0.0.1",8228);
   } while(server_socket == -1 );
 
   while( proceed_flag != "n") {
@@ -71,18 +71,24 @@ int main() {
     coordenada_indice_fim_linha_host = request.find("\n", coordenada_indice_host);
     std::cout << coordenada_indice_fim_linha_host << " e " << coordenada_indice_host << std::endl;
     if( coordenada_indice_host != std::string::npos && coordenada_indice_fim_linha_host != std::string::npos)
-    { 
+    {
       host = request.substr(coordenada_indice_host, coordenada_indice_fim_linha_host - coordenada_indice_host);
     }
     std::cout << "Host é:" << host << std::endl;
 
+    //Atribuindo url à variavel char *host_char
+    strcpy(host_char, "brasilia.deboa.com");
+
+
+    destine_server = gethostbyname(host_char);
+    std::cout << "Endereço ip do Host é:" << inet_ntoa( (struct in_addr) *((struct in_addr *) destine_server->h_addr_list[0])) << std::endl;
 
 
     //Cria o socket cliente como Socket de Envio, para fazer a requisição ao servidor de destino
-    external_socket = create_client_socket("104.28.13.216", 80);
+    external_socket = create_client_socket(inet_ntoa( (struct in_addr) *((struct in_addr *) destine_server->h_addr_list[0])), 80);
 
 
-    
+
     //Teste//Envia a requisição ao destino,pelo Socket de Envio, e pega a resposta
     send(external_socket, request_char, sizeof(request_char), 0);
     recv(external_socket, &response_char, sizeof(response_char), 0);

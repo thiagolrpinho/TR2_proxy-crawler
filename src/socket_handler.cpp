@@ -10,7 +10,7 @@
 
 int create_client_socket(char* address,int port){
   //Cria Socket
-  int client_socket = socket(AF_INET,SOCK_STREAM,0);
+  int client_socket = socket(PF_INET,SOCK_STREAM,IPPROTO_TCP);
   struct sockaddr_in client_address;
   //Especifica o endereço e a porta para o Client Socket
   client_address.sin_family = AF_INET;
@@ -22,7 +22,7 @@ int create_client_socket(char* address,int port){
   /*
   struct hostent *host_url;
   host_url = gethostbyname(url);
-  printf("\nHost: %s \n", inet_ntoa(*((struct in_addr *)host_url->h_addr)));
+  //printf("\nHost: %s \n", inet_ntoa(*((struct in_addr *)host_url->h_addr)));
   bcopy(host_url->h_addr, &client_address.sin_addr.s_addr, host_url->h_length);
   */
 
