@@ -11,9 +11,12 @@ using namespace std;
 
 #ifndef ESTRUTURA_HELPER_HPP
 #define ESTRUTURA_HELPER_HPP
+
 struct estrutura_request {
   char host[350];
   char url[350];
+  char file_path[200];
+  char complete_path[200];
 };
 
 // Função que analise a request a retorna uma estrutura com host, url 

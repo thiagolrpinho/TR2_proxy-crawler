@@ -4,21 +4,28 @@ PROJ_NAME=Proxy
 #Directories
 INCLUDE_DIRECTORY	=./include
 SOURCE_DIRECTORY	=./src
+TEST_SOURCE_DIRECTORY = ./src_tests
 OBJECTS_DIRECTORY = ./objects
 
-#	.c	files
+#	.cpp	files
 _C_SOURCE=$(wildcard	$(patsubst %,$(SOURCE_DIRECTORY)/%,*.cpp))
 
-#	.h	files
+#	.hpp	files
 _DEPS=$(wildcard	$(patsubst %,$(INCLUDE_DIRECTORY)/%, *.hpp))
+
+# .cpp test files
+_C_TEST_SOURCE =$(patsubst %,$(_C_SOURCE)/%, $(wildcard	$(patsubst %,$(TEST_SOURCE_DIRECTORY)/%, *.cpp)) )
 
 #	Object	files
 OBJECT_SOURCES=$(subst	.cpp,.o,$(subst	$(SOURCE_DIRECTORY),$(OBJECTS_DIRECTORY),$(_C_SOURCE)))
+TEST_OBJECT_SOURCES=  $(subst	.cpp,.o,$(subst	$(SOURCE_DIRECTORY),$(OBJECTS_DIRECTORY),$(_C_TEST_SOURCE)))
+
 
 # Variables to make the code more legible	
 
 OBJECT_FILES= $(patsubst %,$(OBJECTS_DIRECTORY)/%,%.o)
 C_FILES = $(patsubst %,$(SOURCE_DIRECTORY)/%,%.cpp)
+TEST_C_FILES = $(patsubst %, $(patsubst %,$(TEST_SOURCE_DIRECTORY)/%,%.cpp), $(C_FILES) )
 
 #	Compiler	and	linker
 CC=g++
@@ -54,6 +61,5 @@ objFolder:
 	
 clean:
 	@	$(RM)	./objects/*.o	$(PROJ_NAME)	*~
-	@	rmdir	objects
-	
+
 .PHONY:	all	clean
