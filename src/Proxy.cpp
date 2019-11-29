@@ -24,7 +24,7 @@ int main() {
   char request_char[40960];
   char response_char[40960];
   const char *host_name_temporary;
-  std::string proceed_flag, request, response, url, host;
+  string proceed_flag, request, response, url, host;
 
   //Cria socket de Recepção e deixa listening
   do {
@@ -35,7 +35,7 @@ int main() {
     //Limpa a variavel que guarda o método do request/response
     memset(host_domain_url, 0, sizeof host_domain_url);
 
-    std::cout << "Recebendo request" << std::endl;
+    cout << "Recebendo request" << endl;
     //Aceita conexão pelo Socket de Recepção
     internal_socket = accept(server_socket, NULL, NULL);
     //Recebe o request
@@ -45,13 +45,14 @@ int main() {
     request_data = request_parser(request);
 
     //Pulando sites de redirecionamento
-    if( request_data.host == "detectportal.firefox.com" ) continue;
+    if( !is_valid_host(request_data.host) ) continue;
+
 
     destine_server = gethostbyname(  request_data.host );
     if( destine_server != NULL ) {
-      std::cout << "Endereço ip do Host é:" << inet_ntoa( (struct in_addr) *((struct in_addr *) destine_server->h_addr_list[0])) << std::endl;
+      cout << "Endereço ip do Host é:" << inet_ntoa( (struct in_addr) *((struct in_addr *) destine_server->h_addr_list[0])) << endl;
     } else {
-      std::cout << "Falha ao capturar o ip de: " << request_data.host << std::endl;
+      cout << "Falha ao capturar o ip de: " << request_data.host << endl;
       shutdown(internal_socket, SHUT_RDWR);
       shutdown(server_socket, SHUT_RDWR);
       break;
@@ -65,14 +66,14 @@ int main() {
     //Teste//Envia a requisição ao destino,pelo Socket de Envio, e pega a resposta
     send(external_socket, request_char, sizeof(request_char), 0);
     recv(external_socket, &response_char, sizeof(response_char), 0);
-    std::cout << "Recebendo Response" << std::endl;
+    cout << "Recebendo Response" << endl;
     shutdown(external_socket, SHUT_RDWR);
     close(external_socket);
 
     //Envia a mensagem pelo Socket Receptor
     send(internal_socket, response_char, sizeof(response_char), 0);
-    std::cout << "Response enviada: " << std::endl;
-    std::cout << response_char << std::endl;
+    cout << "Response enviada: " << endl;
+    cout << response_char << endl;
 
     //Encerra conexão
     shutdown(internal_socket, SHUT_RDWR);
@@ -82,7 +83,7 @@ int main() {
     memset(request_char, 0, sizeof(request_char));
     memset(response_char, 0, sizeof(response_char));
 
-    std::cin >> proceed_flag;
+    cin >> proceed_flag;
   }
 
   shutdown(server_socket, SHUT_RDWR);
