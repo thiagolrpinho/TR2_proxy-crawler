@@ -3,6 +3,7 @@ Módulo criado com o intuito de encapsular funções relacionadas à análise e
 separação de dados extraídos das requisições e respostas
 */
 #include <iostream>
+#include <fstream>
 #include <string>
 #include <string.h>
 #include <strings.h>
@@ -37,14 +38,21 @@ bool is_valid_host(const string host );
 string create_get_request( const string original_url );
 
 
-// Cria uma pasta dentro da pasta cached_files usando a string passada como nome:
+// Cria uma pasta dentro da pasta cached_files usando a string passada como nome,
 bool create_folder(const string nome_pasta );
+
+// Salva nessa pasta os dados desejados em .txt
+bool cache_file(string nome_pasta, string data);
+
+// Carrega os dados armazenados em .txt dentro da pasta desejada:
+string load_cached( string nome_pasta );
 
 // Valida se há uma pasta dentro da pasta cached_files para um dado nome
 bool exist_folder(const string nome_pasta );
 
 // Armazena um caminho completo e cria as pastas necessárias para cada subdominio
-bool store_domain(string complete_path);
+bool store_domain(string complete_path, string dados );
 
-
+// Lê linhas e trata \r
+std::istream& safeGetline(std::istream& is, std::string& t);
 #endif

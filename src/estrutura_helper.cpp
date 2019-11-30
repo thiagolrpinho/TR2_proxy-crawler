@@ -82,7 +82,7 @@ bool is_valid_host(const string host )
 string create_get_request( const string original_url )
 {
   string url;
-  url = "GET " + original_url + " \r\n";
+  url = "GET " + original_url + " HTTP/1.1 \r\n";
 
 
   return url;
@@ -103,18 +103,65 @@ bool create_folder(string nome_pasta)
   return true;
 }
 
-bool exist_folder(const string nome_pasta )
+bool cache_file(string nome_pasta, string dados )
+{
+  string nome_pasta_com_cached = CACHED_FILES_FOLDER + nome_pasta;
+
+  string nome_arquivo = nome_pasta_com_cached + "/cached_request.txt";
+
+  cout << "Caching file inside " + nome_pasta << endl;
+  
+  if( dados != "")
+  {
+    cout << "Caching file with name " + nome_arquivo << endl;
+    ofstream file_cached;
+    file_cached.open(nome_arquivo);
+    file_cached << dados;
+    file_cached.close();
+  }
+  return true;
+}
+
+string load_cached( string caminho_arquivo_com_nome )
+{
+  string nome_pasta_com_cached = CACHED_FILES_FOLDER + caminho_arquivo_com_nome;
+  string nome_arquivo = nome_pasta_com_cached + "/cached_request.txt";
+
+  ifstream infile (nome_arquivo, ios::binary );
+  string dados, linha;
+
+  if (infile.is_open()) {
+    /* dados =  "HTTP/1.0 200 OK\r\n\r\n";
+    if( caminho_arquivo_com_nome.find(".jpg") != string::npos ) {
+      dados += "Content-Type: image/jpg\r\n\r\n";
+    } else if ( caminho_arquivo_com_nome.find(".png") != string::npos ) {
+      dados += "Content-Type: image/png\r\n\r\n";
+    } */
+    while( safeGetline (infile, linha) )
+    {
+      dados = dados + linha + " \r\n";  
+    }
+
+  } else {
+    cout << "Problemas ao ler arquivo";
+    return "";
+  }
+    return dados;
+}
+
+
+bool exist_folder(const string caminho_arquivo_com_nome )
 {
   bool pasta_existe = false;
   struct stat st = {0};
-  string nome_pasta_com_cached = CACHED_FILES_FOLDER + nome_pasta;
+  string caminho_arquivo_com_nome_e_cached = CACHED_FILES_FOLDER + caminho_arquivo_com_nome;
 
-  if (stat(nome_pasta_com_cached.c_str(), &st) != -1) pasta_existe = true;
+  if (stat(caminho_arquivo_com_nome_e_cached.c_str(), &st) != -1) pasta_existe = true;
 
   return pasta_existe ;
 }
 
-bool store_domain(string complete_path)
+bool store_domain(string complete_path, string dados )
 { 
   bool succesfull_stored = true;
   string extracted_subdomain, acummulated_sub_domain = "", delimiter = "/";
@@ -126,16 +173,18 @@ bool store_domain(string complete_path)
   { 
     extracted_subdomain =  complete_path.substr(first_ocurrence, second_ocurrence - first_ocurrence + 1 );
     acummulated_sub_domain = acummulated_sub_domain + extracted_subdomain;
-    cout << acummulated_sub_domain <<  "!Abaco!" << endl;
      // Primeiro verificamos se existe a pasta com esse caminho acumulado
     if( exist_folder(acummulated_sub_domain) == false)
     {
       // Se não existir, criamos a pasta
       if (create_folder(acummulated_sub_domain) == false)succesfull_stored = false;
     } 
+
+
     // Se o segundo indice já estiver no final então não há mais o que procurar
     if ( second_ocurrence == complete_path.size() - 1 )
     {
+      cache_file( acummulated_sub_domain, dados );
       first_ocurrence = string::npos;
     } else {
       // Caso não esteja, continua buscando
@@ -151,28 +200,36 @@ bool store_domain(string complete_path)
 
   return succesfull_stored;
 }
-/*
-if ((dir_result = mkdir(get.host, S_IRUSR | S_IWUSR | S_IXUSR)) != 0)
-    {
-      if (dir_result != 0 && errno != EEXIST)
-      {
-        printf("mkdir error: %s", strerror(errno));
-      }
-    }
-    find_subdir(get);
-    strcat(path, get.host);
-    strcat(path, get.file_path);
-    index = fopen(path, "w");
 
-    while (read(sock, buffer, BUFFER_SIZE - 1) != 0){
-      fputs(buffer,index);
-      bzero(buffer, BUFFER_SIZE);
-    }
+std::istream& safeGetline(std::istream& is, std::string& t)
+{
+    t.clear();
 
-    fclose(index);
-    sendCachedFile(get.complete_path, new_socket);
-    shutdown(sock, SHUT_RDWR);
-    close(sock);
-    printf("[Proxy] No cahced file! Downloaded and sent!");
-  }
-  */
+    // The characters in the stream are read one-by-one using a std::streambuf.
+    // That is faster than reading them one-by-one using the std::istream.
+    // Code that uses streambuf this way must be guarded by a sentry object.
+    // The sentry object performs various tasks,
+    // such as thread synchronization and updating the stream state.
+
+    std::istream::sentry se(is, true);
+    std::streambuf* sb = is.rdbuf();
+
+    for(;;) {
+        int c = sb->sbumpc();
+        switch (c) {
+        case '\n':
+            return is;
+        case '\r':
+            if(sb->sgetc() == '\n')
+                sb->sbumpc();
+            return is;
+        case std::streambuf::traits_type::eof():
+            // Also handle the case when the last line has no line ending
+            if(t.empty())
+                is.setstate(std::ios::eofbit);
+            return is;
+        default:
+            t += (char)c;
+        }
+    }
+}

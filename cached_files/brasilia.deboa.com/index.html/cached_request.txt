@@ -1,0 +1,16 @@
+HTTP/1.1 200 OK
+Date: Sat, 30 Nov 2019 16:18:04 GMT
+Content-Type: text/html; charset=UTF-8
+Transfer-Encoding: chunked
+Connection: keep-alive
+Vary: Accept-Encoding
+X-Powered-By: PHP/5.6.33
+X-Pingback: http://brasilia.deboa.com/xmlrpc.php
+CF-Cache-Status: DYNAMIC
+Alt-Svc: h2=":443"; ma=60
+Server: cloudflare
+CF-RAY: 53de22443e95d855-EZE
+Content-Encoding: gzip
+
+3b7
+‹

@@ -34,7 +34,7 @@ RM	=	rm	-rf
 #	Compilation	and	linking
 #
 #This is the first rule, it verfies if objFolder rule was done and if PROJ_NAME rule was done
-all:	objFolder	$(PROJ_NAME)
+all:	objFolder	$(PROJ_NAME) cleanCached
 
 # Then it looks for the PROJ_NAME rule and it verifies if the OBJ_SOURCES files exists, if not it follows that rule
 # If they do exist, it compiles using the chosen compiler, the proj_name as the program name and using the obj_sources files
@@ -54,7 +54,9 @@ objFolder:
 	@	mkdir	-p	objects
 	
 clean:
-	@	$(RM)	./objects/*.o	$(PROJ_NAME)	*~
-	@	rmdir	objects
-	
+	@	$(RM)	./objects/*.o ./cached_files/*	$(PROJ_NAME)	*~
+
+cleanCached:
+	@	$(RM)	-r ./cached_files/*
+
 .PHONY:	all	clean
