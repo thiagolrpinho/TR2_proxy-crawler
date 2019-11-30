@@ -16,7 +16,12 @@ using namespace std;
 #define ESTRUTURA_HELPER_HPP
 
 #define GET_STRING_SIZE (4)
+#define PUT_STRING_SIZE (4)
 #define POST_STRING_SIZE (5)
+#define HEAD_STRING_SIZE (5)
+#define PATCH_STRING_SIZE (6)
+#define DELETE_STRING_SIZE (7)
+#define CONNECT_STRING_SIZE (8)
 #define HTTP_1_STRING_SIZE (6)
 #define CACHED_FILES_FOLDER "./cached_files/"
 
@@ -26,6 +31,9 @@ struct estrutura_request {
   char file_path[200];
   char complete_path[200];
 };
+
+// Função que retorna o indice correto onde começa a url da requisição
+size_t find_request_coordinate( string request );
 
 // Função que analise a request a retorna uma estrutura com host, url 
 // e subdominio.
