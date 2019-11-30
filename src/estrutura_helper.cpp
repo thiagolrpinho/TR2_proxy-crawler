@@ -1,43 +1,59 @@
 #include "estrutura_helper.hpp"
 
 
+size_t find_request_coordinate( string request )
+{
+  size_t coordenada_requisicao;
+  coordenada_requisicao = request.find("GET", 0);
+  if ( coordenada_requisicao != string::npos ) return coordenada_requisicao + GET_STRING_SIZE;
+  coordenada_requisicao = request.find("POST", 0);
+  if(coordenada_requisicao != string::npos) return coordenada_requisicao + POST_STRING_SIZE;
+  coordenada_requisicao = request.find("CONNECT", 0);
+  if(coordenada_requisicao != string::npos) return coordenada_requisicao + CONNECT_STRING_SIZE;
+  coordenada_requisicao = request.find("HEAD", 0);
+  if(coordenada_requisicao != string::npos) return coordenada_requisicao + HEAD_STRING_SIZE;
+  coordenada_requisicao = request.find("PUT", 0);
+  if(coordenada_requisicao != string::npos) return coordenada_requisicao + PUT_STRING_SIZE;
+  coordenada_requisicao = request.find("DELETE", 0);
+  if(coordenada_requisicao != string::npos) return coordenada_requisicao + DELETE_STRING_SIZE;
+  coordenada_requisicao = request.find("PATCH", 0);
+  if(coordenada_requisicao != string::npos) return coordenada_requisicao + PATCH_STRING_SIZE;
 
-
+}
 estrutura_request request_parser( string request )
 { 
   estrutura_request analisador_request;
-  string url, host, full_path, file_path;
-  size_t coordenada_indice_get, coordenada_indice_http, coordenada_indice_host, coordenada_indice_fim_linha_host;
- 
+  string url, host, full_path, file_path, porta;
+  size_t coordenada_requisicao, coordenada_indice_http, coordenada_indice_host, coordenada_indice_fim_linha_host;
+  size_t coordenada_porta;
+
   //Printa o request no terminal
   cout << "Request recebida: " << endl;
   cout << request << endl;
 
-  coordenada_indice_get = request.find("GET", 0);
-
-  if ( coordenada_indice_get == string::npos )
-  {
-    coordenada_indice_get = request.find("POST", 0);
-    if(coordenada_indice_get != string::npos) coordenada_indice_get += POST_STRING_SIZE;
-  } else {
-    coordenada_indice_get += GET_STRING_SIZE;
-  }
-
+  coordenada_requisicao = find_request_coordinate(  request );
   coordenada_indice_http = request.find(" HTTP/1", 0 );
-  if( coordenada_indice_http != string::npos && coordenada_indice_get != string::npos)
+  if( coordenada_indice_http != string::npos && coordenada_requisicao != string::npos)
   {
-    url = request.substr(coordenada_indice_get, coordenada_indice_http - coordenada_indice_get);
+    url = request.substr(coordenada_requisicao, coordenada_indice_http - coordenada_requisicao);
   }
 
   cout << "Url é:" << url << endl;
 
   coordenada_indice_host = request.find("Host:", 0 ) + HTTP_1_STRING_SIZE;
   coordenada_indice_fim_linha_host = request.find("\n", coordenada_indice_host);
+  
   if( coordenada_indice_host != string::npos && coordenada_indice_fim_linha_host != string::npos)
   {
     host = request.substr(coordenada_indice_host, coordenada_indice_fim_linha_host - coordenada_indice_host);
+    coordenada_porta = host.find(":");
+    if( coordenada_porta != string::npos ) { 
+      porta = host.substr( coordenada_porta , host.size() - coordenada_indice_fim_linha_host - 1 );
+      host = host.substr( 0 , coordenada_indice_fim_linha_host );
+
+    }
   }
-  cout << "Host é:" << host << endl;
+  cout << "Host é:" << host <<  endl;
 
 // Limpando os \r 
 url.erase( remove(url.begin(), url.end(), '\r'), url.end() );
@@ -59,8 +75,8 @@ strncpy(analisador_request.host, host.c_str(), host.size());
 strncpy(analisador_request.file_path, file_path.c_str(), file_path.size());
 strncpy(analisador_request.complete_path, full_path.c_str(), full_path.size());
 
-cout << analisador_request.file_path << endl;
-cout << analisador_request.complete_path << endl;
+cout << "File path: " << analisador_request.file_path << endl;
+cout << "complete path: " << analisador_request.complete_path << endl;
 
 return analisador_request;
 }
