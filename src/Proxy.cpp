@@ -38,8 +38,8 @@ int main() {
     internal_socket = accept(server_socket, NULL, NULL);
     //Recebe o request
     recv(internal_socket, request_char, sizeof(request_char), 0);
-    request = request_char;
 
+    request = request_char;
     request_data = request_parser(request);
 
     //Pulando sites de redirecionamento
@@ -55,27 +55,27 @@ int main() {
       shutdown(server_socket, SHUT_RDWR);
       break;
     }
-    response = create_get_request(request_data.url );
-    cout << response << endl;
-    strncpy(response_char, response.c_str(), response.size() );
 
-    //Cria o socket cliente como Socket de Envio, para fazer a requisição ao servidor de destino
-    external_socket = create_client_socket(inet_ntoa( (struct in_addr) *((struct in_addr *) destine_server->h_addr_list[0])), 80);
+    if( exist_folder( request_data.complete_path ) == false )
+    // Se não existir uma pasta para esse subdomínio, ele cria o subdomínio e armazena a resposta externa
+    {
+      //Cria o socket cliente como Socket de Envio, para fazer a requisição ao servidor de destino
+      external_socket = create_client_socket(inet_ntoa( (struct in_addr) *((struct in_addr *) destine_server->h_addr_list[0])), 80);
+      //Envia a requisição ao destino,pelo Socket de Envio, e pega a resposta
+      send(external_socket, request_char, sizeof(request_char), 0);
+      recv(external_socket, &response_char, sizeof(response_char), 0);
+      shutdown(external_socket, SHUT_RDWR);
+      close(external_socket);
 
+      response = response_char;
+      if(!store_domain( request_data.complete_path, response ) ) return false;
+    } else {
+      // Se já existir uma pasta criada para esse subdominio, carrega o que está salvo
+      response = load_cached( request_data.complete_path );
+      strncpy(response_char, response.c_str(), response.size() );
+    }
 
-
-    //Envia a requisição ao destino,pelo Socket de Envio, e pega a resposta
-    send(external_socket, request_char, sizeof(request_char), 0);
-    recv(external_socket, &response_char, sizeof(response_char), 0);
-    cout << "Recebendo Response" << endl;
-    shutdown(external_socket, SHUT_RDWR);
-    close(external_socket);
-
-    response = response_char;
-
-    if(!store_domain(request_data.complete_path, response) ) return false;
-
-    //Envia a mensagem pelo Socket Receptor
+    //Envia a mensagem pelo Socket Interno
     send(internal_socket, response_char, sizeof(response_char), 0);
     cout << "Response enviada: " << endl;
     cout << response_char << endl;

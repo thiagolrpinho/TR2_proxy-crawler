@@ -39,10 +39,13 @@ string create_get_request( const string original_url );
 
 
 // Cria uma pasta dentro da pasta cached_files usando a string passada como nome,
-bool create_folder(const string nome_pasta, string data );
+bool create_folder(const string nome_pasta );
 
-// Salva nessa pasta os dados desejada na forma de um txt
+// Salva nessa pasta os dados desejados em .txt
 bool cache_file(string nome_pasta, string data);
+
+// Carrega os dados armazenados em .txt dentro da pasta desejada:
+string load_cached( string nome_pasta );
 
 // Valida se há uma pasta dentro da pasta cached_files para um dado nome
 bool exist_folder(const string nome_pasta );
@@ -50,5 +53,6 @@ bool exist_folder(const string nome_pasta );
 // Armazena um caminho completo e cria as pastas necessárias para cada subdominio
 bool store_domain(string complete_path, string dados );
 
-
+// Lê linhas e trata \r
+std::istream& safeGetline(std::istream& is, std::string& t);
 #endif
