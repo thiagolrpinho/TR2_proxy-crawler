@@ -39,14 +39,16 @@ string create_get_request( const string original_url );
 
 
 // Cria uma pasta dentro da pasta cached_files usando a string passada como nome,
-// caso alguma informação de data seja passada, salva nessa pasta a informação desejada.
 bool create_folder(const string nome_pasta, string data );
+
+// Salva nessa pasta os dados desejada na forma de um txt
+bool cache_file(string nome_pasta, string data);
 
 // Valida se há uma pasta dentro da pasta cached_files para um dado nome
 bool exist_folder(const string nome_pasta );
 
 // Armazena um caminho completo e cria as pastas necessárias para cada subdominio
-bool store_domain(string complete_path);
+bool store_domain(string complete_path, string dados );
 
 
 #endif

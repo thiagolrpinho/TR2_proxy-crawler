@@ -88,7 +88,7 @@ string create_get_request( const string original_url )
   return url;
 }
 
-bool create_folder(string nome_pasta, string data = "")
+bool create_folder(string nome_pasta, string dados = "")
 {
   int creation_result;
   string nome_pasta_com_cached = CACHED_FILES_FOLDER + nome_pasta;
@@ -101,11 +101,29 @@ bool create_folder(string nome_pasta, string data = "")
       return false;
     }
   }
-  if( data != "")
+  if( dados != "")
   {
     ofstream file_cached;
     file_cached.open(nome_pasta_com_cached);
-    file_cached << data;
+    file_cached << dados;
+    file_cached.close();
+  }
+  return true;
+}
+
+bool cache_file(string nome_pasta, string dados )
+{
+  string nome_pasta_com_cached = CACHED_FILES_FOLDER + nome_pasta;
+
+  string nome_arquivo = "cached_request.txt";
+
+  cout << "Caching file inside " + nome_pasta << endl;
+  
+  if( dados != "")
+  {
+    ofstream file_cached;
+    file_cached.open(nome_arquivo);
+    file_cached << dados;
     file_cached.close();
   }
   return true;
@@ -122,7 +140,7 @@ bool exist_folder(const string nome_pasta )
   return pasta_existe ;
 }
 
-bool store_domain(string complete_path)
+bool store_domain(string complete_path, string dados )
 { 
   bool succesfull_stored = true;
   string extracted_subdomain, acummulated_sub_domain = "", delimiter = "/";
@@ -140,9 +158,12 @@ bool store_domain(string complete_path)
       // Se não existir, criamos a pasta
       if (create_folder(acummulated_sub_domain) == false)succesfull_stored = false;
     } 
+
+
     // Se o segundo indice já estiver no final então não há mais o que procurar
     if ( second_ocurrence == complete_path.size() - 1 )
     {
+      cache_file( acummulated_sub_domain, dados );
       first_ocurrence = string::npos;
     } else {
       // Caso não esteja, continua buscando

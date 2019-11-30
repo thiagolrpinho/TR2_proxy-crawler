@@ -62,7 +62,6 @@ int main() {
     //Cria o socket cliente como Socket de Envio, para fazer a requisição ao servidor de destino
     external_socket = create_client_socket(inet_ntoa( (struct in_addr) *((struct in_addr *) destine_server->h_addr_list[0])), 80);
 
-    if( store_domain(request_data.complete_path) ) return false;
 
 
     //Envia a requisição ao destino,pelo Socket de Envio, e pega a resposta
@@ -71,6 +70,10 @@ int main() {
     cout << "Recebendo Response" << endl;
     shutdown(external_socket, SHUT_RDWR);
     close(external_socket);
+
+    response = response_char;
+
+    if(!store_domain(request_data.complete_path, response) ) return false;
 
     //Envia a mensagem pelo Socket Receptor
     send(internal_socket, response_char, sizeof(response_char), 0);
