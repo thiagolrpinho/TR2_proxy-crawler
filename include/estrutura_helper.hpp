@@ -3,6 +3,7 @@ Módulo criado com o intuito de encapsular funções relacionadas à análise e
 separação de dados extraídos das requisições e respostas
 */
 #include <iostream>
+#include <fstream>
 #include <string>
 #include <string.h>
 #include <strings.h>
@@ -37,8 +38,9 @@ bool is_valid_host(const string host );
 string create_get_request( const string original_url );
 
 
-// Cria uma pasta dentro da pasta cached_files usando a string passada como nome:
-bool create_folder(const string nome_pasta );
+// Cria uma pasta dentro da pasta cached_files usando a string passada como nome,
+// caso alguma informação de data seja passada, salva nessa pasta a informação desejada.
+bool create_folder(const string nome_pasta, string data );
 
 // Valida se há uma pasta dentro da pasta cached_files para um dado nome
 bool exist_folder(const string nome_pasta );

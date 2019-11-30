@@ -88,10 +88,11 @@ string create_get_request( const string original_url )
   return url;
 }
 
-bool create_folder(string nome_pasta)
+bool create_folder(string nome_pasta, string data = "")
 {
   int creation_result;
   string nome_pasta_com_cached = CACHED_FILES_FOLDER + nome_pasta;
+  string nome_arquivo = nome_pasta_com_cached + nome_pasta + ".txt";
   if ((creation_result = mkdir( nome_pasta_com_cached.c_str(), S_IRUSR | S_IWUSR | S_IXUSR)) != 0)
   {
     if (creation_result != 0 && errno != EEXIST)
@@ -99,6 +100,13 @@ bool create_folder(string nome_pasta)
       cout << "mkdir error: " << strerror(errno) << endl;
       return false;
     }
+  }
+  if( data != "")
+  {
+    ofstream file_cached;
+    file_cached.open(nome_pasta_com_cached);
+    file_cached << data;
+    file_cached.close();
   }
   return true;
 }
@@ -126,7 +134,6 @@ bool store_domain(string complete_path)
   { 
     extracted_subdomain =  complete_path.substr(first_ocurrence, second_ocurrence - first_ocurrence + 1 );
     acummulated_sub_domain = acummulated_sub_domain + extracted_subdomain;
-    cout << acummulated_sub_domain <<  "!Abaco!" << endl;
      // Primeiro verificamos se existe a pasta com esse caminho acumulado
     if( exist_folder(acummulated_sub_domain) == false)
     {
@@ -151,28 +158,3 @@ bool store_domain(string complete_path)
 
   return succesfull_stored;
 }
-/*
-if ((dir_result = mkdir(get.host, S_IRUSR | S_IWUSR | S_IXUSR)) != 0)
-    {
-      if (dir_result != 0 && errno != EEXIST)
-      {
-        printf("mkdir error: %s", strerror(errno));
-      }
-    }
-    find_subdir(get);
-    strcat(path, get.host);
-    strcat(path, get.file_path);
-    index = fopen(path, "w");
-
-    while (read(sock, buffer, BUFFER_SIZE - 1) != 0){
-      fputs(buffer,index);
-      bzero(buffer, BUFFER_SIZE);
-    }
-
-    fclose(index);
-    sendCachedFile(get.complete_path, new_socket);
-    shutdown(sock, SHUT_RDWR);
-    close(sock);
-    printf("[Proxy] No cahced file! Downloaded and sent!");
-  }
-  */

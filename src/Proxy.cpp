@@ -62,7 +62,8 @@ int main() {
     //Cria o socket cliente como Socket de Envio, para fazer a requisição ao servidor de destino
     external_socket = create_client_socket(inet_ntoa( (struct in_addr) *((struct in_addr *) destine_server->h_addr_list[0])), 80);
 
-    store_domain(request_data.complete_path);
+    if( store_domain(request_data.complete_path) ) return false;
+
 
     //Envia a requisição ao destino,pelo Socket de Envio, e pega a resposta
     send(external_socket, request_char, sizeof(request_char), 0);
