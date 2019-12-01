@@ -27,7 +27,7 @@ size_t find_request_coordinate( string request, estrutura_request request_header
 
   return string::npos;
 }
-estrutura_request request_parser( string request )
+estrutura_request extract_header( string request )
 { 
   estrutura_request request_header;
   string url, host, full_path, file_path, porta;

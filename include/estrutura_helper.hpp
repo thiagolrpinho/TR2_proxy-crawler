@@ -42,7 +42,7 @@ size_t find_request_coordinate( string request, estrutura_request request_header
 
 // Função que analise a request a retorna uma estrutura com host, url 
 // e subdominio.
-estrutura_request request_parser( string request );
+estrutura_request extract_header( string request );
 
 // Estrutura recebe um host e retorna se ele é válido
 bool is_valid_host(const string host );

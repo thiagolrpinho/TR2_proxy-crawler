@@ -55,7 +55,7 @@ TEST_CASE( "Encontra termos", "[Parser]" )
     Upgrade-Insecure-Requests: 1
     Cache-Control: max-age=0)";
 
-    estrutura_testada = request_parser(request);
+    estrutura_testada = extract_header(request);
     
     REQUIRE( strcmp(estrutura_testada.host, estrutura_gabarito.host) == 0 ); 
     REQUIRE( strcmp(estrutura_testada.url, estrutura_gabarito.url) == 0 );

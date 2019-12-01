@@ -21,7 +21,7 @@ int main() {
   int server_socket, external_socket, internal_socket;
   char host_domain_url[30];
   char request_char[40960];
-  char response_char[4];
+  char response_char[200000];
   string proceed_flag, request, response, url, host;
 
 
@@ -48,7 +48,7 @@ int main() {
 
     request = set_accept_enconde_identity(request);
     strncpy(request_char, request.c_str(), request.size());
-    request_data = request_parser(request);
+    request_data = extract_header(request);
 
     //Pulando sites de redirecionamento
     if( !is_valid_host(request_data.host) ) continue;
@@ -86,22 +86,23 @@ int main() {
         close(external_socket);
 
         if( !store_domain( request_data.complete_path, response ) ) return false;
+        strncpy(response_char, response.c_str(), response.size());
       } else {
-          cout << "Pasta existe" << endl;
-          // Se já existir uma pasta criada para esse subdominio, carrega o que está salvo
-          response = load_cached( request_data.complete_path );
-          strncpy(response_char, response.c_str(), response.size() );
+        cout << "Pasta existe" << endl;
+        // Se já existir uma pasta criada para esse subdominio, carrega o que está salvo
+        response = load_cached( request_data.complete_path );
+        strncpy(response_char, response.c_str(), response.size() );
         }
-      } else {
-          cout << "Não é get" << endl;
-        //Cria o socket cliente como Socket de Envio, para fazer a requisição ao servidor de destino
-        external_socket = create_client_socket(inet_ntoa( (struct in_addr) *((struct in_addr *) destine_server->h_addr_list[0])), 80);
-        //Envia a requisição ao destino,pelo Socket de Envio, e pega a resposta
-        send(external_socket, request_char, sizeof(request_char), 0);
-        recv(external_socket, &response_char, sizeof(response_char), 0);
-        shutdown(external_socket, SHUT_RDWR);
-        close(external_socket);
-      }
+    } else {
+      cout << "Não é get" << endl;
+      //Cria o socket cliente como Socket de Envio, para fazer a requisição ao servidor de destino
+      external_socket = create_client_socket(inet_ntoa( (struct in_addr) *((struct in_addr *) destine_server->h_addr_list[0])), 80);
+      //Envia a requisição ao destino,pelo Socket de Envio, e pega a resposta
+      send(external_socket, request_char, sizeof(request_char), 0);
+      recv(external_socket, &response_char, sizeof(response_char), 0);
+      shutdown(external_socket, SHUT_RDWR);
+      close(external_socket);
+    }
 
     //Envia a mensagem pelo Socket Interno
     send(internal_socket, response_char, sizeof(response_char), 0);
