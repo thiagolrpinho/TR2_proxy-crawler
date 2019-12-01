@@ -24,7 +24,6 @@ int main() {
   char response_char[4];
   string proceed_flag, request, response, url, host;
 
-  cout << "No céu tem pão?\r" << "Curto pão!" << endl;
 
   //Cria socket de Recepção e deixa listening
   do {
@@ -45,8 +44,18 @@ int main() {
 
     //Recebe o request
     recv(internal_socket, request_char, sizeof(request_char), 0);
-
     request = request_char;
+
+    size_t slicer_first_coordinate, slicer_second_coordinate;
+    string request_temp, word_to_find = "Accept-Encoding: ", identity_enconding = "identity\r\n";
+    slicer_first_coordinate = request.find(word_to_find);    
+    slicer_second_coordinate = request.find("\n", slicer_first_coordinate);
+    if( slicer_first_coordinate != string::npos and slicer_second_coordinate != string::npos ){
+      request_temp = request.replace(slicer_first_coordinate + word_to_find.size(),  slicer_second_coordinate - slicer_first_coordinate - word_to_find.size(), identity_enconding );
+    }
+    cout << request_temp << "!" << endl;
+    strncpy(request_char, request_temp.c_str(), request_temp.size() );
+
     request_data = request_parser(request);
 
     //Pulando sites de redirecionamento
@@ -84,7 +93,6 @@ int main() {
         shutdown(external_socket, SHUT_RDWR);
         close(external_socket);
 
-        cout << "Response total: " << response << "!" << endl;
         if( !store_domain( request_data.complete_path, response ) ) return false;
       } else {
           cout << "Pasta existe" << endl;
