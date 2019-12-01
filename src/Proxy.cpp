@@ -18,11 +18,13 @@ int main() {
 
   hostent *destine_server;
   estrutura_request request_data;
-  int server_socket, external_socket, internal_socket, proceed_count = 50;
+  size_t partial_index_coordinate;
+  int server_socket, external_socket, internal_socket, proceed_count = 200;
+  int number_of_fragments, segmentation_sent, total_length, segment_size;
   char host_domain_url[30];
   char request_char[40960];
-  char response_char[200000];
-  string request, response, url, host;
+  char response_char[1024];
+  string request, response, url, host, partial_response;
 
 
   //Cria socket de Recepção e deixa listening
@@ -30,7 +32,8 @@ int main() {
     server_socket = create_server_socket("127.0.0.1",8228);
   } while(server_socket == -1 );
 
-  while( proceed_count > 0) {
+  while( proceed_count > 0) 
+  {
     //Limpa a variaveis de request/response
     memset(request_char, 0, sizeof(request_char));
     memset(response_char, 0, sizeof(response_char));
@@ -45,6 +48,7 @@ int main() {
     //Recebe o request
     recv(internal_socket, request_char, sizeof(request_char), 0);
     request = request_char;
+    if( request.size() < 10 ) continue;
 
     request = set_accept_enconde_identity(request);
     strncpy(request_char, request.c_str(), request.size());
@@ -87,12 +91,10 @@ int main() {
         close(external_socket);
 
         if( !store_domain( request_data.complete_path, response ) ) return false;
-        strncpy(response_char, response.c_str(), response.size());
       } else {
         cout << "Pasta existe" << endl;
         // Se já existir uma pasta criada para esse subdominio, carrega o que está salvo
         response = load_cached( request_data.complete_path );
-        strncpy(response_char, response.c_str(), response.size() );
         }
     } else {
       cout << "Não é get" << endl;
@@ -106,9 +108,33 @@ int main() {
     }
 
     //Envia a mensagem pelo Socket Interno
-    send(internal_socket, response_char, sizeof(response_char), 0);
+    total_length = response.size();
+    number_of_fragments = response.size()/sizeof(response_char);
+    cout << "parcial" << endl;
+    for( int segments_sent = 0; segments_sent < number_of_fragments; segments_sent++ )
+    {
+      partial_index_coordinate = (segments_sent)*sizeof(response_char) - 1;
+      
+      if(partial_index_coordinate + sizeof(response_char) >= response.size() )
+      {
+        segment_size = response.size() - partial_index_coordinate - 1;
+      } else {
+        segment_size = response.size();
+      }
+
+      partial_response = response.substr( partial_index_coordinate , segment_size );
+      strncpy(response_char, partial_response.c_str(), partial_response.size() );
+      send(internal_socket, response_char, sizeof(response_char), 0);
+    };
+
     cout << "Response enviada: " << endl;
-    cout << response_char << endl;
+    response = response_char;
+    if(response.size() > 500)
+    {
+      cout << response.substr(0, 500) << endl;
+    } else {
+      cout << response << endl;
+    }
 
     //Encerra conexão
     shutdown(internal_socket, SHUT_RDWR);

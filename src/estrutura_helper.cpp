@@ -47,7 +47,7 @@ estrutura_request extract_header( string request )
 
   //Printa o request no terminal
   cout << "Request recebida e sendo analisada. " << endl;
-  cout << request << "!Fim" << endl;
+  cout << request.substr(0, 700) << "!Fim" << endl;
 
   coordenada_requisicao = find_request_coordinate(  request, request_header  );
   coordenada_indice_http = request.find(" HTTP/1", 0 );
