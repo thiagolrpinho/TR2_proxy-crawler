@@ -5,12 +5,13 @@
 
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <netinet/tcp.h>
 #include <arpa/inet.h>
 
 
 int create_client_socket(char* address,int port){
   //Cria Socket
-  int client_socket = socket(PF_INET,SOCK_STREAM,IPPROTO_TCP);
+  int client_socket = socket(AF_INET,SOCK_STREAM,0);
   struct sockaddr_in client_address;
   //Especifica o endereço e a porta para o Client Socket
   client_address.sin_family = AF_INET;
@@ -37,11 +38,15 @@ int create_client_socket(char* address,int port){
 int create_server_socket(char* address,int port){
   //Cria Socket
   int server_socket = socket(AF_INET,SOCK_STREAM,0);
+  int on = 1;
+  
   struct sockaddr_in server_address;
   //Especifica o endereço e a porta para o Server Socket
   server_address.sin_family = AF_INET;
   server_address.sin_port = htons(port);
   server_address.sin_addr.s_addr = inet_addr(address);
+  //setsockopt(server_socket, IPPROTO_TCP, TCP_NODELAY, (const char *)&on, sizeof(int));
+
   //Associa o IP e a porta ao Server Socket
   bind(server_socket, (struct sockaddr*) &server_address, sizeof(server_address));
   //Fica escutando o Server Socket
