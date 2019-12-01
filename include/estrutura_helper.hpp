@@ -10,6 +10,8 @@ separação de dados extraídos das requisições e respostas
 #include <algorithm>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <catch.hpp>
+
 using namespace std;
 
 #ifndef ESTRUTURA_HELPER_HPP
@@ -63,6 +65,10 @@ bool exist_folder(const string relative_folder_path );
 
 // Armazena um caminho completo e cria as pastas necessárias para cada subdominio
 bool store_domain(string complete_path, string dados );
+
+// Receives a request, searches for Accept-Encode and overwrites the params
+// to identity
+string set_accept_enconde_identity(string original_request);
 
 // Lê linhas e trata \r
 std::istream& safeGetline(std::istream& is, std::string& t);

@@ -287,3 +287,9 @@ std::istream& safeGetline(std::istream& is, std::string& t)
         }
     }
 }
+
+
+string set_accept_enconde_identity(string original_request)
+{
+  return "";
+}

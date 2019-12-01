@@ -46,16 +46,6 @@ int main() {
     recv(internal_socket, request_char, sizeof(request_char), 0);
     request = request_char;
 
-    size_t slicer_first_coordinate, slicer_second_coordinate;
-    string request_temp, word_to_find = "Accept-Encoding: ", identity_enconding = "identity\r\n";
-    slicer_first_coordinate = request.find(word_to_find);    
-    slicer_second_coordinate = request.find("\n", slicer_first_coordinate);
-    if( slicer_first_coordinate != string::npos and slicer_second_coordinate != string::npos ){
-      request_temp = request.replace(slicer_first_coordinate + word_to_find.size(),  slicer_second_coordinate - slicer_first_coordinate - word_to_find.size(), identity_enconding );
-    }
-    cout << request_temp << "!" << endl;
-    strncpy(request_char, request_temp.c_str(), request_temp.size() );
-
     request_data = request_parser(request);
 
     //Pulando sites de redirecionamento

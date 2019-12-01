@@ -4,22 +4,28 @@ PROJ_NAME=Proxy
 #Directories
 INCLUDE_DIRECTORY	=./include
 SOURCE_DIRECTORY	=./src
+TEST_SOURCE_DIRECTORY	=./test_src
 OBJECTS_DIRECTORY = ./objects
 
-#	.c	files
+#	.cpp	files
 _C_SOURCE=$(wildcard	$(patsubst %,$(SOURCE_DIRECTORY)/%,*.cpp))
 
-#	.h	files
+#	test .cpp	files
+TEST_C_SOURCE= ./src/estrutura_helper.cpp ./test_src/testa_estrutura_helper.cpp ./test_src/tests_main.cpp
+
+#	.hpp	files
 _DEPS=$(wildcard	$(patsubst %,$(INCLUDE_DIRECTORY)/%, *.hpp))
 
 
 #	Object	files
 OBJECT_SOURCES=$(subst	.cpp,.o,$(subst	$(SOURCE_DIRECTORY),$(OBJECTS_DIRECTORY),$(_C_SOURCE)))
+TEST_OBJECT_SOURCES= ./objects/estrutura_helper.o ./objects/testa_estrutura_helper.o ./objects/tests_main.o
 
 # Variables to make the code more legible	
 
 OBJECT_FILES= $(patsubst %,$(OBJECTS_DIRECTORY)/%,%.o)
 C_FILES = $(patsubst %,$(SOURCE_DIRECTORY)/%,%.cpp)
+TEST_C_FILES = $(patsubst %,$(TEST_SOURCE_DIRECTORY)/%,%.cpp)
 
 #	Compiler	and	linker
 CC=g++
@@ -49,7 +55,18 @@ $(OBJECT_FILES):	$(C_FILES)	$(_DEPS)
 	@	echo	'Building	target	using	GCC	compiler:	$<'
 	$(CC)	$<	$(CFLAGS)	-o	$@
 	@	echo	'	'
-	
+
+$(OBJECT_FILES):	$(TEST_C_FILES)	$(_DEPS)
+	@	echo	'Building	target	using	GCC	compiler:	$<'
+	$(CC)	$<	$(CFLAGS)	-o	$@
+	@	echo	'	'
+
+testes:	$(TEST_OBJECT_SOURCES)
+	@	echo	'Building	binary	using	GCC	linker:	$@'
+	$(CC)	$^	-o	$@
+	@	echo	'Finished	building	binary:	$@'
+	@	echo	'	'
+
 objFolder:
 	@	mkdir	-p	objects
 	
