@@ -18,11 +18,11 @@ int main() {
 
   hostent *destine_server;
   estrutura_request request_data;
-  int server_socket, external_socket, internal_socket;
+  int server_socket, external_socket, internal_socket, proceed_count = 50;
   char host_domain_url[30];
   char request_char[40960];
   char response_char[200000];
-  string proceed_flag, request, response, url, host;
+  string request, response, url, host;
 
 
   //Cria socket de Recepção e deixa listening
@@ -30,7 +30,7 @@ int main() {
     server_socket = create_server_socket("127.0.0.1",8228);
   } while(server_socket == -1 );
 
-  while( proceed_flag != "n") {
+  while( proceed_count > 0) {
     //Limpa a variaveis de request/response
     memset(request_char, 0, sizeof(request_char));
     memset(response_char, 0, sizeof(response_char));
@@ -59,6 +59,7 @@ int main() {
       cout << "Endereço ip do Host é:" << inet_ntoa( (struct in_addr) *((struct in_addr *) destine_server->h_addr_list[0])) << endl;
     } else {
       cout << "Falha ao capturar o ip de: " << request_data.host << endl;
+      cout << request << endl;
       shutdown(internal_socket, SHUT_RDWR);
       shutdown(server_socket, SHUT_RDWR);
       break;
@@ -115,7 +116,7 @@ int main() {
 
 
 
-    cin >> proceed_flag;
+    proceed_count -= 1;
   }
 
   shutdown(server_socket, SHUT_RDWR);
