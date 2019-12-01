@@ -291,5 +291,16 @@ std::istream& safeGetline(std::istream& is, std::string& t)
 
 string set_accept_enconde_identity(string original_request)
 {
-  return "";
+  size_t slicer_first_coordinate, slicer_second_coordinate;
+  string request_temp, word_to_find = "Accept-Encoding: ", identity_enconding = "identity";
+  slicer_first_coordinate = original_request.find(word_to_find);    
+  slicer_second_coordinate = original_request.find("\n", slicer_first_coordinate);
+  
+  if( slicer_first_coordinate != string::npos and slicer_second_coordinate != string::npos ){
+    request_temp = original_request.replace(slicer_first_coordinate + word_to_find.size(),  slicer_second_coordinate - slicer_first_coordinate - word_to_find.size(), identity_enconding );
+  } else {
+    request_temp = original_request;
+  }
+  
+  return request_temp;
 }

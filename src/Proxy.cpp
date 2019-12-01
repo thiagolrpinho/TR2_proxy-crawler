@@ -46,6 +46,8 @@ int main() {
     recv(internal_socket, request_char, sizeof(request_char), 0);
     request = request_char;
 
+    request = set_accept_enconde_identity(request);
+    strncpy(request_char, request.c_str(), request.size());
     request_data = request_parser(request);
 
     //Pulando sites de redirecionamento
