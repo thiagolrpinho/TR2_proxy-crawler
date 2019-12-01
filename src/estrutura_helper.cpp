@@ -46,8 +46,7 @@ estrutura_request request_parser( string request )
   if ( coordenada_requisicao != string::npos )   request_header.is_get = true;
 
   //Printa o request no terminal
-  cout << "Request recebida: " << endl;
-  cout << request << endl;
+  cout << "Request recebida e sendo analisada. " << endl;
 
   coordenada_requisicao = find_request_coordinate(  request, request_header  );
   coordenada_indice_http = request.find(" HTTP/1", 0 );
@@ -55,8 +54,6 @@ estrutura_request request_parser( string request )
   {
     url = request.substr(coordenada_requisicao, coordenada_indice_http - coordenada_requisicao);
   }
-
-  
 
   coordenada_indice_host = request.find("Host:", 0 ) + HTTP_1_STRING_SIZE;
   coordenada_indice_fim_linha_host = request.find("\n", coordenada_indice_host);
@@ -293,9 +290,10 @@ string set_accept_enconde_identity(string original_request)
 {
   size_t slicer_first_coordinate, slicer_second_coordinate;
   string request_temp, word_to_find = "Accept-Encoding: ", identity_enconding = "identity";
+
   slicer_first_coordinate = original_request.find(word_to_find);    
   slicer_second_coordinate = original_request.find("\n", slicer_first_coordinate);
-  
+
   if( slicer_first_coordinate != string::npos and slicer_second_coordinate != string::npos ){
     request_temp = original_request.replace(slicer_first_coordinate + word_to_find.size(),  slicer_second_coordinate - slicer_first_coordinate - word_to_find.size(), identity_enconding );
   } else {

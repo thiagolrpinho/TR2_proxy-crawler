@@ -67,7 +67,7 @@ bool exist_folder(const string relative_folder_path );
 bool store_domain(string complete_path, string dados );
 
 // Receives a request, searches for Accept-Encode and overwrites the params
-// to identity
+// to identity. if no Accept-Encode was found, return the same string
 string set_accept_enconde_identity(string original_request);
 
 // Lê linhas e trata \r
