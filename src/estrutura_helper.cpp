@@ -76,6 +76,9 @@ host.erase( remove(host.begin(), host.end(), '\r'), host.end() );
 
 
 dominio = "http://" + host + "/";
+cout << "Domínio é: "<<dominio << endl;
+cout << "url é: "<<url << endl;
+cout << "Resquet é: " << request << endl;
 
 if( dominio.compare(url) == 0 )
 {
