@@ -42,11 +42,12 @@ estrutura_request extract_header( string request )
   memset(request_header.porta, 0, sizeof(request_header.porta));
   memset(request_header.complete_path, 0, sizeof(request_header.complete_path));
 
-  coordenada_requisicao = request.find("GET", 0);
+  coordenada_requisicao = request.find("GET ", 0);
   if ( coordenada_requisicao != string::npos )   request_header.is_get = true;
 
   //Printa o request no terminal
   cout << "Request recebida e sendo analisada. " << endl;
+  cout << request << "!Fim" << endl;
 
   coordenada_requisicao = find_request_coordinate(  request, request_header  );
   coordenada_indice_http = request.find(" HTTP/1", 0 );
@@ -54,40 +55,34 @@ estrutura_request extract_header( string request )
   {
     url = request.substr(coordenada_requisicao, coordenada_indice_http - coordenada_requisicao);
   }
-
   coordenada_indice_host = request.find("Host:", 0 ) + HTTP_1_STRING_SIZE;
   coordenada_indice_fim_linha_host = request.find("\n", coordenada_indice_host);
   
   if( coordenada_indice_host != string::npos && coordenada_indice_fim_linha_host != string::npos)
   {
     host = request.substr(coordenada_indice_host, coordenada_indice_fim_linha_host - coordenada_indice_host);
-    coordenada_porta = host.find(":");
-    if( coordenada_porta != string::npos ) 
-    { 
-      porta = host.substr( coordenada_porta , host.size() - coordenada_porta - 1 );
-      host = host.substr( 0 , coordenada_porta );
-      cout << "Há porta: " << porta << endl;
-    }
+    
   }
 
 // Limpando os \r 
 url.erase( remove(url.begin(), url.end(), '\r'), url.end() );
 host.erase( remove(host.begin(), host.end(), '\r'), host.end() );
 
-
-dominio = "http://" + host + "/";
-cout << "Domínio é: "<<dominio << endl;
-cout << "url é: "<<url << endl;
-cout << "Resquet é: " << request << endl;
-
-if( dominio.compare(url) == 0 )
+if( request_header.is_get )
 {
-  file_path = "/index.html";
-} else {
-  file_path = url.substr(dominio.size()-1, url.size() - dominio.size() + 1);
-}
+  dominio = "http://" + host + "/";
+  if( dominio.compare(url) == 0 )
+  {
+    file_path = "/index.html";
+  } else {
+    file_path = url.substr(dominio.size()-1, url.size() - dominio.size() + 1);
+  }
 
-full_path = host + file_path;
+  full_path = host + file_path;
+} else {
+  file_path = "";
+  full_path = "";
+}
 
 strncpy(request_header.url, url.c_str(), url.size() );
 strncpy(request_header.host, host.c_str(), host.size());

@@ -62,7 +62,7 @@ TEST_CASE( "Encontra termos", "[Parser]" )
     REQUIRE( strcmp(estrutura_testada.url, estrutura_gabarito.url) == 0 );
     REQUIRE( strcmp(estrutura_testada.file_path, estrutura_gabarito.file_path) == 0 ); 
     REQUIRE( strcmp(estrutura_testada.complete_path, estrutura_gabarito.complete_path) == 0 ); 
-  } // SECTION( "Extrai informações HOST")
+  } // SECTION( "Extrai informações header")
 
   SECTION("Extrai informação do header com porta na url")
   {
@@ -79,15 +79,15 @@ TEST_CASE( "Encontra termos", "[Parser]" )
                         User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:70.0) Gecko/20100101 Firefox/70.0
                         Proxy-Connection: keep-alive
                         Connection: keep-alive
-                        Host: push.services.mozilla.com:443)";
+                        Host: push.services.mozilla.com:443
+                        )";
 
     estrutura_testada = extract_header(request);
     
-    REQUIRE( strcmp(estrutura_testada.host, estrutura_gabarito.host) == 0 ); 
     REQUIRE( strcmp(estrutura_testada.url, estrutura_gabarito.url) == 0 );
     REQUIRE( strcmp(estrutura_testada.file_path, estrutura_gabarito.file_path) == 0 ); 
     REQUIRE( strcmp(estrutura_testada.complete_path, estrutura_gabarito.complete_path) == 0 ); 
-  } // SECTION( "Extrai informações HOST")
-
+    REQUIRE( strcmp(estrutura_testada.host, estrutura_gabarito.host) == 0 ); 
+  } // SECTION( "Extrai informações header ")
 
 } // TEST_CASE( "Encontra termos", "[Parser]" ) 
