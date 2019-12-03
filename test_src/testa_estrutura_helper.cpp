@@ -41,7 +41,7 @@ TEST_CASE( "Encontra termos", "[Parser]" )
     , "http://brasilia.deboa.com/"
     , "/index.html"
     , "brasilia.deboa.com/index.html"
-    , "080"
+    , 80
     , true 
     };
 
@@ -61,7 +61,9 @@ TEST_CASE( "Encontra termos", "[Parser]" )
     REQUIRE( strcmp(estrutura_testada.host, estrutura_gabarito.host) == 0 ); 
     REQUIRE( strcmp(estrutura_testada.url, estrutura_gabarito.url) == 0 );
     REQUIRE( strcmp(estrutura_testada.file_path, estrutura_gabarito.file_path) == 0 ); 
-    REQUIRE( strcmp(estrutura_testada.complete_path, estrutura_gabarito.complete_path) == 0 ); 
+    REQUIRE( strcmp(estrutura_testada.complete_path, estrutura_gabarito.complete_path) == 0 );
+    REQUIRE( estrutura_testada.porta == estrutura_gabarito.porta ); 
+
   } // SECTION( "Extrai informações header")
 
   SECTION("Extrai informação do header com porta na url")
@@ -71,7 +73,7 @@ TEST_CASE( "Encontra termos", "[Parser]" )
     , "push.services.mozilla.com:443"
     , ""
     , ""
-    , "443"
+    , 443
     , true 
     };
 
@@ -88,6 +90,9 @@ TEST_CASE( "Encontra termos", "[Parser]" )
     REQUIRE( strcmp(estrutura_testada.file_path, estrutura_gabarito.file_path) == 0 ); 
     REQUIRE( strcmp(estrutura_testada.complete_path, estrutura_gabarito.complete_path) == 0 ); 
     REQUIRE( strcmp(estrutura_testada.host, estrutura_gabarito.host) == 0 ); 
+    REQUIRE( estrutura_testada.porta == estrutura_gabarito.porta ); 
+
+
   } // SECTION( "Extrai informações header ")
 
 } // TEST_CASE( "Encontra termos", "[Parser]" ) 
