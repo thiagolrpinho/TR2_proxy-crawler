@@ -67,6 +67,7 @@ estrutura_request extract_header( string request )
       porta = stoi(host.substr(coordenada_porta + 1, host.size() - (coordenada_porta + 1)));
       host = host.substr(0,coordenada_porta);
     } else {
+      
       porta = 80;
     }
   }
@@ -182,8 +183,8 @@ string load_cached( string caminho_arquivo_com_nome )
   string caminho_relativo_pasta_com_cached = CACHED_FILES_FOLDER + caminho_arquivo_com_nome;
   string nome_arquivo = caminho_relativo_pasta_com_cached + "/index.html";
 
-  ifstream infile (nome_arquivo, ios::binary );
-  string dados, linha;
+  ifstream infile (nome_arquivo );
+  string dados = "", linha;
 
   if (infile.is_open()) {
     /* dados =  "HTTP/1.0 200 OK\r\n\r\n";
@@ -194,7 +195,7 @@ string load_cached( string caminho_arquivo_com_nome )
     } */
     while( safeGetline (infile, linha) )
     {
-      dados = dados + linha + " \r\n";
+      dados = dados + linha + " \n";
     }
 
   } else {
