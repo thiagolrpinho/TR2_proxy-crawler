@@ -42,8 +42,9 @@ estrutura_request extract_header( string request )
   memset(request_header.complete_path, 0, sizeof(request_header.complete_path));
 
   coordenada_porta = host.find(":");
+
   if ( coordenada_porta != string::npos ){
-    porta = host.substr(coordenada_porta + 1, host.size() - (coordenada_porta + 1));
+    porta = host.substr(coordenada_porta + 1, string::npos);
     host = host.substr(0,coordenada_porta);
   }
 
