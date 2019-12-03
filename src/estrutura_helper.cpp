@@ -28,12 +28,11 @@ size_t find_request_coordinate( string request, estrutura_request request_header
   return string::npos;
 }
 estrutura_request extract_header( string request )
-{ 
+{
   estrutura_request request_header;
   string url, host, full_path, file_path, porta;
   string dominio;
-  size_t coordenada_requisicao, coordenada_indice_http, coordenada_indice_host, coordenada_indice_fim_linha_host;
-  size_t coordenada_porta;
+  size_t coordenada_requisicao, coordenada_indice_http, coordenada_indice_host, coordenada_indice_fim_linha_host, coordenada_porta;
 
   request_header.is_get = false;
   memset(request_header.host, 0, sizeof(request_header.host));
@@ -41,6 +40,12 @@ estrutura_request extract_header( string request )
   memset(request_header.file_path, 0, sizeof(request_header.file_path));
   memset(request_header.porta, 0, sizeof(request_header.porta));
   memset(request_header.complete_path, 0, sizeof(request_header.complete_path));
+
+  coordenada_porta = host.find(":");
+  if ( coordenada_porta != string::npos ){
+    porta = host.substr(coordenada_porta + 1, host.size() - (coordenada_porta + 1));
+    host = host.substr(0,coordenada_porta);
+  }
 
   coordenada_requisicao = request.find("GET ", 0);
   if ( coordenada_requisicao != string::npos )   request_header.is_get = true;
@@ -57,14 +62,14 @@ estrutura_request extract_header( string request )
   }
   coordenada_indice_host = request.find("Host:", 0 ) + HTTP_1_STRING_SIZE;
   coordenada_indice_fim_linha_host = request.find("\n", coordenada_indice_host);
-  
+
   if( coordenada_indice_host != string::npos && coordenada_indice_fim_linha_host != string::npos)
   {
     host = request.substr(coordenada_indice_host, coordenada_indice_fim_linha_host - coordenada_indice_host);
-    
+
   }
 
-// Limpando os \r 
+// Limpando os \r
 url.erase( remove(url.begin(), url.end(), '\r'), url.end() );
 host.erase( remove(host.begin(), host.end(), '\r'), host.end() );
 
@@ -99,14 +104,14 @@ return request_header;
 
 
 bool is_valid_host(const string host )
-{ 
+{
   bool site_valid = true;
   if( host == "detectportal.firefox.com" ) site_valid = false;
   if( host == "g.symcd.com") site_valid = false;
   if( host == "sr.symcd.com") site_valid = false;
   if( host == "ocsp.digicert.com") site_valid = false;
   if( host == "ocsp.pki.goog") site_valid = false;
- 
+
   return site_valid;
 }
 
@@ -122,11 +127,11 @@ string create_get_request( const string original_url )
 
 bool create_folder(string caminho_relativo_pasta )
 {
-  int creation_result; 
+  int creation_result;
   size_t coordenada_ponto;
   cout << "Creating folder: " << caminho_relativo_pasta << "!" << endl;
-  
-  
+
+
 
   string caminho_relativo_pasta_com_cached = CACHED_FILES_FOLDER + caminho_relativo_pasta;
 
@@ -150,12 +155,12 @@ bool cache_file(string caminho_relativo_pasta, string dados)
   //if( coordenada_ponto == string::npos )
   //{
     nome_arquivo = caminho_relativo_pasta_com_cached + "/index.html";
-  //} else { 
+  //} else {
   //  nome_arquivo = caminho_relativo_pasta_com_cached;
   //}
 
   cout << "Caching file inside " + caminho_relativo_pasta << endl;
-  
+
   if( dados != "")
   {
     cout << "Caching file with name " + nome_arquivo << endl;
@@ -184,7 +189,7 @@ string load_cached( string caminho_arquivo_com_nome )
     } */
     while( safeGetline (infile, linha) )
     {
-      dados = dados + linha + " \r\n";  
+      dados = dados + linha + " \r\n";
     }
 
   } else {
@@ -207,7 +212,7 @@ bool exist_folder(const string caminho_arquivo_com_nome )
 }
 
 bool store_domain(string complete_path, string dados )
-{ 
+{
   bool succesfull_stored = true;
   string extracted_subdomain, acummulated_sub_domain = "", delimiter = "/";
   size_t first_slice_coordinate, second_slice_coordinate;
@@ -217,17 +222,17 @@ bool store_domain(string complete_path, string dados )
   cout << "Storing domain" << endl;
 
   while(second_slice_coordinate != string::npos and first_slice_coordinate != string::npos )
-  { 
+  {
     extracted_subdomain =  complete_path.substr(first_slice_coordinate, second_slice_coordinate - first_slice_coordinate + 1 );
     acummulated_sub_domain = acummulated_sub_domain + extracted_subdomain;
     cout << "Slicing domain:" << acummulated_sub_domain << "!" << endl;
-     
+
     // Primeiro verificamos se existe a pasta com esse caminho acumulado
     if( exist_folder(acummulated_sub_domain) == false)
     {
       // Se não existir, criamos a pasta
       if (create_folder(acummulated_sub_domain) == false) succesfull_stored = false;
-    } 
+    }
 
     // Se o segundo indice já estiver no final então não há mais o que procurar
     if ( second_slice_coordinate == complete_path.size() - 1 )
@@ -236,7 +241,7 @@ bool store_domain(string complete_path, string dados )
       first_slice_coordinate = string::npos;
     } else {
       // Caso não esteja, continua buscando
-      
+
       first_slice_coordinate = second_slice_coordinate + 1;
     }
     second_slice_coordinate = complete_path.find(delimiter, first_slice_coordinate + 1);
@@ -245,7 +250,7 @@ bool store_domain(string complete_path, string dados )
     {
       second_slice_coordinate = complete_path.size() - 1;
     }
-  } 
+  }
 
   return succesfull_stored;
 }
@@ -289,7 +294,7 @@ string set_accept_enconde_identity(string original_request)
   size_t slicer_first_coordinate, slicer_second_coordinate;
   string request_temp, word_to_find = "Accept-Encoding: ", identity_enconding = "identity";
 
-  slicer_first_coordinate = original_request.find(word_to_find);    
+  slicer_first_coordinate = original_request.find(word_to_find);
   slicer_second_coordinate = original_request.find("\n", slicer_first_coordinate);
 
   if( slicer_first_coordinate != string::npos and slicer_second_coordinate != string::npos ){
@@ -297,6 +302,6 @@ string set_accept_enconde_identity(string original_request)
   } else {
     request_temp = original_request;
   }
-  
+
   return request_temp;
 }

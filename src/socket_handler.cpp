@@ -38,8 +38,8 @@ int create_client_socket(char* address,int port){
 int create_server_socket(char* address,int port){
   //Cria Socket
   int server_socket = socket(AF_INET,SOCK_STREAM,0);
-  int on = 1;
-  
+  //int on = 1;
+
   struct sockaddr_in server_address;
   //Especifica o endereço e a porta para o Server Socket
   server_address.sin_family = AF_INET;

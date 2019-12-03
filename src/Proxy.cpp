@@ -32,7 +32,7 @@ int main() {
     server_socket = create_server_socket("127.0.0.1",8228);
   } while(server_socket == -1 );
 
-  while( proceed_count > 0) 
+  while( proceed_count > 0)
   {
     //Limpa a variaveis de request/response
     memset(request_char, 0, sizeof(request_char));
@@ -68,7 +68,7 @@ int main() {
       shutdown(server_socket, SHUT_RDWR);
       break;
     }
-    if( request_data.is_get ) 
+    if( request_data.is_get )
     {
       cout << "Request é Get" << endl;
       if( exist_folder( request_data.complete_path ) == false )
@@ -79,7 +79,7 @@ int main() {
         external_socket = create_client_socket(inet_ntoa( (struct in_addr) *((struct in_addr *) destine_server->h_addr_list[0])), 80);
         //Envia a requisição ao destino,pelo Socket de Envio, e pega a resposta
         send(external_socket, request_char, sizeof(request_char), 0);
-        
+
         response = "";
         while( read(external_socket, &response_char, sizeof(response_char) - 1) != 0)
         {
@@ -113,8 +113,8 @@ int main() {
     cout << "parcial" << endl;
     for( int segments_sent = 0; segments_sent < number_of_fragments; segments_sent++ )
     {
-      partial_index_coordinate = (segments_sent)*sizeof(response_char) - 1;
-      
+      partial_index_coordinate = (segments_sent)*sizeof(response_char);
+
       if(partial_index_coordinate + sizeof(response_char) >= response.size() )
       {
         segment_size = response.size() - partial_index_coordinate - 1;
