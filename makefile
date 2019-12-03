@@ -11,7 +11,7 @@ OBJECTS_DIRECTORY = ./objects
 _C_SOURCE=$(wildcard	$(patsubst %,$(SOURCE_DIRECTORY)/%,*.cpp))
 
 #	test .cpp	files
-TEST_C_SOURCE= ./src/estrutura_helper.cpp ./src/proxy.cpp ./test_src/testa_estrutura_helper.cpp ./test_src/tests_main.cpp ./test_src/testa_proxy.cpp
+TEST_C_SOURCE= ./src/estrutura_helper.cpp ./src/proxy_handler.cpp ./test_src/testa_estrutura_helper.cpp ./test_src/tests_main.cpp ./test_src/testa_proxy.cpp
 
 #	.hpp	files
 _DEPS=$(wildcard	$(patsubst %,$(INCLUDE_DIRECTORY)/%, *.hpp))
@@ -19,7 +19,7 @@ _DEPS=$(wildcard	$(patsubst %,$(INCLUDE_DIRECTORY)/%, *.hpp))
 
 #	Object	files
 OBJECT_SOURCES=$(subst	.cpp,.o,$(subst	$(SOURCE_DIRECTORY),$(OBJECTS_DIRECTORY),$(_C_SOURCE)))
-TEST_OBJECT_SOURCES= ./objects/estrutura_helper.o ./objects/testa_estrutura_helper.o ./objects/tests_main.o ./objects/testa_proxy.o
+TEST_OBJECT_SOURCES= ./objects/estrutura_helper.o ./objects/testa_estrutura_helper.o ./objects/tests_main.o ./objects/testa_proxy.o ./objects/proxy_handler.o
 
 # Variables to make the code more legible
 

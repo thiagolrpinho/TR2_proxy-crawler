@@ -1,5 +1,4 @@
-#include "http_client_handler.hpp"
-#include "http_server_handler.hpp"
+#include "proxy_handler.hpp"
 
 
 TEST_CASE(" Testa lógica do cliente ", "[HTTP_CLIENT] ")

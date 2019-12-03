@@ -97,7 +97,7 @@ TEST_CASE( "Encontra termos", "[Parser]" )
 
   SECTION("Extrai informação do header com porta na url, segundo case"){
     estrutura_request estrutura_testada;
-    estrutura_request estrutura_gabarito = {"push.services.mozilla.com:443"
+    estrutura_request estrutura_gabarito = {"content-signature-2.cdn.mozilla.net"
     , "content-signature-2.cdn.mozilla.net:443"
     , ""
     , ""
