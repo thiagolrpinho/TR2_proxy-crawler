@@ -41,7 +41,7 @@ TEST_CASE( "Encontra termos", "[Parser]" )
     , "http://brasilia.deboa.com/"
     , "/index.html"
     , "brasilia.deboa.com/index.html"
-    , "000"
+    , "080"
     , true 
     };
 
@@ -67,7 +67,7 @@ TEST_CASE( "Encontra termos", "[Parser]" )
   SECTION("Extrai informação do header com porta na url")
   {
     estrutura_request estrutura_testada;
-    estrutura_request estrutura_gabarito = {"push.services.mozilla.com:443"
+    estrutura_request estrutura_gabarito = {"push.services.mozilla.com"
     , "push.services.mozilla.com:443"
     , ""
     , ""
