@@ -17,10 +17,10 @@
 int main() {
 
   hostent *destine_server;
-  estrutura_request request_data;
-  size_t partial_index_coordinate;
+  estrutura_request header_attributes;
+  size_t partial_index_coordinate, total_length;
   int server_socket, external_socket, internal_socket, proceed_count = 200;
-  int number_of_fragments, segmentation_sent, total_length, segment_size;
+  int number_of_fragments, segmentation_sent, segment_size;
   char host_domain_url[30];
   char request_char[40960];
   char response_char[1024];
@@ -50,33 +50,33 @@ int main() {
     request = request_char;
     if( request.size() < 10 ) continue;
 
-    request = set_accept_enconde_identity(request);
+    //request = set_accept_enconde_identity(request);
     strncpy(request_char, request.c_str(), request.size());
-    request_data = extract_header(request);
+    header_attributes = extract_header(request);
 
     //Pulando sites de redirecionamento
-    if( !is_valid_host(request_data.host) ) continue;
-    cout << "Host antes do destine: " << request_data.host << "!" << endl;
+    if( !is_valid_host(header_attributes.host) ) continue;
+    cout << "Host antes do destine: " << header_attributes.host << "!" << endl;
 
-    destine_server = gethostbyname(  request_data.host );
+    destine_server = gethostbyname(  header_attributes.host );
     if( destine_server != NULL ) {
       cout << "Endereço ip do Host é:" << inet_ntoa( (struct in_addr) *((struct in_addr *) destine_server->h_addr_list[0])) << endl;
     } else {
-      cout << "Falha ao capturar o ip de: " << request_data.host << endl;
+      cout << "Falha ao capturar o ip de: " << header_attributes.host << endl;
       cout << request << endl;
       shutdown(internal_socket, SHUT_RDWR);
       shutdown(server_socket, SHUT_RDWR);
       break;
     }
-    if( request_data.is_get )
+    if( header_attributes.is_get )
     {
       cout << "Request é Get" << endl;
-      if( exist_folder( request_data.complete_path ) == false )
+      if( exist_folder( header_attributes.complete_path ) == false )
       // Se não existir uma pasta para esse subdomínio, ele cria o subdomínio e armazena a resposta externa
       {
         cout << "Pasta não existe" << endl;
         //Cria o socket cliente como Socket de Envio, para fazer a requisição ao servidor de destino
-        external_socket = create_client_socket(inet_ntoa( (struct in_addr) *((struct in_addr *) destine_server->h_addr_list[0])), 80);
+        external_socket = create_client_socket(inet_ntoa( (struct in_addr) *((struct in_addr *) destine_server->h_addr_list[0])), header_attributes.porta);
         //Envia a requisição ao destino,pelo Socket de Envio, e pega a resposta
         send(external_socket, request_char, sizeof(request_char), 0);
 
@@ -87,14 +87,16 @@ int main() {
           bzero(response_char, sizeof(response_char));
         }
 
+        cout << "Response  enviada antes é get: " << response.substr(0, 500) << endl;
+
         shutdown(external_socket, SHUT_RDWR);
         close(external_socket);
 
-        if( !store_domain( request_data.complete_path, response ) ) return false;
+        if( !store_domain( header_attributes.complete_path, response ) ) return false;
       } else {
         cout << "Pasta existe" << endl;
         // Se já existir uma pasta criada para esse subdominio, carrega o que está salvo
-        response = load_cached( request_data.complete_path );
+        response = load_cached( header_attributes.complete_path );
         }
     } else {
       cout << "Não é get" << endl;
@@ -109,26 +111,24 @@ int main() {
 
     //Envia a mensagem pelo Socket Interno
     total_length = response.size();
-    number_of_fragments = response.size()/sizeof(response_char);
-    cout << "parcial" << endl;
-    for( int segments_sent = 0; segments_sent < number_of_fragments; segments_sent++ )
+    number_of_fragments = total_length/sizeof(response_char);
+
+    for( int segments_sent = 0; segments_sent <= number_of_fragments; segments_sent++ )
     {
       partial_index_coordinate = (segments_sent)*sizeof(response_char);
 
-      if(partial_index_coordinate + sizeof(response_char) >= response.size() )
+      if( partial_index_coordinate + sizeof(response_char) >= total_length )
       {
-        segment_size = response.size() - partial_index_coordinate - 1;
+        segment_size = total_length - partial_index_coordinate - 1;
       } else {
-        segment_size = response.size();
+        segment_size = sizeof(response_char);
       }
-
       partial_response = response.substr( partial_index_coordinate , segment_size );
       strncpy(response_char, partial_response.c_str(), partial_response.size() );
       send(internal_socket, response_char, sizeof(response_char), 0);
     };
 
-    cout << "Response enviada: " << endl;
-    response = response_char;
+    response.erase( remove(response.begin(), response.end(), '\r'), response.end() );
     if(response.size() > 500)
     {
       cout << response.substr(0, 500) << endl;

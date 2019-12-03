@@ -32,7 +32,7 @@ struct estrutura_request {
   char url[350];
   char file_path[200];
   char complete_path[200];
-  char porta[4];
+  int porta;
   bool is_get;
 };
 

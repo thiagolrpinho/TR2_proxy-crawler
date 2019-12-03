@@ -30,22 +30,18 @@ size_t find_request_coordinate( string request, estrutura_request request_header
 estrutura_request extract_header( string request )
 {
   estrutura_request request_header;
-  string url, host, full_path, file_path, porta;
+  string url, host, full_path, file_path;
   string dominio;
+  int porta;
   size_t coordenada_requisicao, coordenada_indice_http, coordenada_indice_host, coordenada_indice_fim_linha_host, coordenada_porta;
 
   request_header.is_get = false;
   memset(request_header.host, 0, sizeof(request_header.host));
   memset(request_header.url, 0, sizeof(request_header.url));
   memset(request_header.file_path, 0, sizeof(request_header.file_path));
-  memset(request_header.porta, 0, sizeof(request_header.porta));
   memset(request_header.complete_path, 0, sizeof(request_header.complete_path));
 
-  coordenada_porta = host.find(":");
-  if ( coordenada_porta != string::npos ){
-    porta = host.substr(coordenada_porta + 1, host.size() - (coordenada_porta + 1));
-    host = host.substr(0,coordenada_porta);
-  }
+  
 
   coordenada_requisicao = request.find("GET ", 0);
   if ( coordenada_requisicao != string::npos )   request_header.is_get = true;
@@ -66,7 +62,14 @@ estrutura_request extract_header( string request )
   if( coordenada_indice_host != string::npos && coordenada_indice_fim_linha_host != string::npos)
   {
     host = request.substr(coordenada_indice_host, coordenada_indice_fim_linha_host - coordenada_indice_host);
-
+    coordenada_porta = host.find(":");
+    if ( coordenada_porta != string::npos ){
+      porta = stoi(host.substr(coordenada_porta + 1, host.size() - (coordenada_porta + 1)));
+      host = host.substr(0,coordenada_porta);
+    } else {
+      
+      porta = 80;
+    }
   }
 
 // Limpando os \r
@@ -93,11 +96,14 @@ strncpy(request_header.url, url.c_str(), url.size() );
 strncpy(request_header.host, host.c_str(), host.size());
 strncpy(request_header.file_path, file_path.c_str(), file_path.size());
 strncpy(request_header.complete_path, full_path.c_str(), full_path.size());
+request_header.porta = porta;
 
 cout << "Url é:" << request_header.url << endl;
 cout << "Host é:" << request_header.host <<  endl;
 cout << "File path: " << request_header.file_path << endl;
 cout << "complete path: " << request_header.complete_path << endl;
+cout << "complete path: " << to_string(request_header.porta) << endl;
+
 
 return request_header;
 }
@@ -177,8 +183,8 @@ string load_cached( string caminho_arquivo_com_nome )
   string caminho_relativo_pasta_com_cached = CACHED_FILES_FOLDER + caminho_arquivo_com_nome;
   string nome_arquivo = caminho_relativo_pasta_com_cached + "/index.html";
 
-  ifstream infile (nome_arquivo, ios::binary );
-  string dados, linha;
+  ifstream infile (nome_arquivo );
+  string dados = "", linha;
 
   if (infile.is_open()) {
     /* dados =  "HTTP/1.0 200 OK\r\n\r\n";
@@ -189,7 +195,7 @@ string load_cached( string caminho_arquivo_com_nome )
     } */
     while( safeGetline (infile, linha) )
     {
-      dados = dados + linha + " \r\n";
+      dados = dados + linha + " \n";
     }
 
   } else {
