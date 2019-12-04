@@ -1,16 +1,9 @@
-#include <stdio.h>
 #include "proxy_handler.hpp"
-#include "socket_handler.hpp"
 
-string recv_request(int server_socket){
-  int server_socket, internal_socket;
+
+string recv_request(int server_socket, int internal_socket){
   char request_buffer[1024];
   string request;
-
-    //Cria socket de Recepção e deixa listening
-  do {
-    server_socket = create_server_socket("127.0.0.1",8228);
-  } while(server_socket == -1 );
 
   //Aceita conexão pelo Socket de Recepção
   internal_socket = accept(server_socket, NULL, NULL);
@@ -25,7 +18,7 @@ string recv_request(int server_socket){
   return request;
 }
 
-bool send_response(string response, ){
+string send_response(string response, int internal_socket){
   char response_buffer[1024];
   string partial_response;
   int number_of_fragments, segmentation_sent, segment_size;
@@ -52,6 +45,7 @@ bool send_response(string response, ){
     send(internal_socket, response_buffer, sizeof(response_buffer), 0);
   };
 
+  //Printa na tela por motivo de teste
   response.erase( remove(response.begin(), response.end(), '\r'), response.end() );
   if(response.size() > 500)
   {
@@ -64,5 +58,27 @@ bool send_response(string response, ){
   shutdown(internal_socket, SHUT_RDWR);
   close(internal_socket);
 
-  return false;
+  return response;
+}
+
+bool send_request(){
+
+  return true
+}
+
+bool recv_response(){
+
+  return true
+}
+
+hostent dns_resolution(estrutura_request header_attributes){
+  hostent *destine_server;
+  destine_server = gethostbyname(  header_attributes.host );
+  if( destine_server != NULL ) {
+    //cout << "Endereço ip do Host é:" << inet_ntoa( (struct in_addr) *((struct in_addr *) destine_server->h_addr_list[0])) << endl;
+    return destine_server;
+  } else {
+    cout << "Falha ao capturar o ip de: " << header_attributes.host << endl;
+
+    return NULL;
 }

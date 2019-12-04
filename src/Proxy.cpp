@@ -58,6 +58,7 @@ int main() {
     if( !is_valid_host(header_attributes.host) ) continue;
     cout << "Host antes do destine: " << header_attributes.host << "!" << endl;
 
+    //Faz requisição ao servidor DNS 
     destine_server = gethostbyname(  header_attributes.host );
     if( destine_server != NULL ) {
       cout << "Endereço ip do Host é:" << inet_ntoa( (struct in_addr) *((struct in_addr *) destine_server->h_addr_list[0])) << endl;
