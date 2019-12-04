@@ -128,8 +128,6 @@ int start_full_proxy() {
     shutdown(internal_socket, SHUT_RDWR);
     close(internal_socket);
 
-
-
     proceed_count -= 1;
   }
 
@@ -158,8 +156,7 @@ string send_request_and_receive_response(int browser_proxy_socket, string reques
   char request_char[4000], response_char[1024];
 
   //Pulando sites de redirecionamento
-  if( !is_valid_host(host) ) return "Host Inválido";
-  cout << "Host antes do destine: " << host << "!" << endl;
+  //if( !is_valid_host(host) ) return "Host Inválido";
 
   destine_server = gethostbyname(  host );
   if( destine_server != NULL ) {
@@ -187,7 +184,29 @@ string send_request_and_receive_response(int browser_proxy_socket, string reques
   return response;
 }
 
-string send_back_request(int proxy_socket)
+void send_back_request(int proxy_socket, string response)
 {
+  int total_length, number_of_fragments, segment_size;
+  string partial_response;
+  size_t partial_index_coordinate;
+  char response_char[4096];
+  //Envia a mensagem, pelo Socket Interno
+  total_length = response.size();
+  number_of_fragments = total_length/sizeof(response_char);
+
+  for( int segments_sent = 0; segments_sent <= number_of_fragments; segments_sent++ )
+  {
+    partial_index_coordinate = (segments_sent)*sizeof(response_char);
+
+    if( partial_index_coordinate + sizeof(response_char) >= total_length )
+    {
+      segment_size = total_length - partial_index_coordinate - 1;
+    } else {
+      segment_size = sizeof(response_char);
+    }
+    partial_response = response.substr( partial_index_coordinate , segment_size );
+    strncpy(response_char, partial_response.c_str(), partial_response.size() );
+    send(proxy_socket, response_char, sizeof(response_char), 0);
+  };
 
 }

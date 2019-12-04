@@ -39,5 +39,7 @@ void JanelaPrincipal::on_pushButton_request_clicked()
 
 void JanelaPrincipal::on_pushButton_response_clicked()
 {
-
+    send_back_request(browser_proxy_socket, response);
+    ui->label_response->setText("Response enviada");
+    ui->label_request->setText("Aguardando nova ativação");
 }
