@@ -29,22 +29,22 @@
      <rect>
       <x>400</x>
       <y>30</y>
-      <width>341</width>
+      <width>351</width>
       <height>301</height>
      </rect>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButton">
+   <widget class="QPushButton" name="pushButton_captura">
     <property name="geometry">
      <rect>
-      <x>340</x>
+      <x>310</x>
       <y>380</y>
-      <width>89</width>
+      <width>161</width>
       <height>25</height>
      </rect>
     </property>
     <property name="text">
-     <string>Ativar Proxy</string>
+     <string>Captura Request</string>
     </property>
    </widget>
    <widget class="QPushButton" name="pushButton_request">
@@ -73,42 +73,24 @@
      <string>Devolve Response</string>
     </property>
    </widget>
-   <widget class="QLabel" name="label_request">
+   <widget class="QTextEdit" name="textEdit_request">
     <property name="geometry">
      <rect>
       <x>30</x>
       <y>40</y>
-      <width>321</width>
+      <width>331</width>
       <height>251</height>
      </rect>
     </property>
-    <property name="autoFillBackground">
-     <bool>true</bool>
-    </property>
-    <property name="text">
-     <string>TextLabel</string>
-    </property>
-    <property name="alignment">
-     <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-    </property>
    </widget>
-   <widget class="QLabel" name="label_response">
+   <widget class="QTextEdit" name="textEdit_response">
     <property name="geometry">
      <rect>
       <x>410</x>
       <y>40</y>
-      <width>321</width>
+      <width>331</width>
       <height>251</height>
      </rect>
-    </property>
-    <property name="autoFillBackground">
-     <bool>true</bool>
-    </property>
-    <property name="text">
-     <string>TextLabel</string>
-    </property>
-    <property name="alignment">
-     <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
     </property>
    </widget>
   </widget>

@@ -19,13 +19,12 @@ public:
     string request, response;
 
 private slots:
-    void on_pushButton_clicked();
-
-
+    void on_pushButton_captura_clicked();
 
     void on_pushButton_request_clicked();
 
     void on_pushButton_response_clicked();
+
 
 private:
     Ui::JanelaPrincipal *ui;
