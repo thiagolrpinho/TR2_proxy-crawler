@@ -22,7 +22,22 @@ JanelaPrincipal::~JanelaPrincipal()
 void JanelaPrincipal::on_pushButton_clicked()
 {
     QString qstring_para_conversao;
-    request = get_request(proxy_socket);
+    browser_proxy_socket = accept(proxy_socket, NULL, NULL);
+    request = get_request(browser_proxy_socket);
     qstring_para_conversao = QString::fromStdString(request);
     ui->label_request->setText(qstring_para_conversao);
+}
+
+void JanelaPrincipal::on_pushButton_request_clicked()
+{
+    QString qstring_para_conversao;
+    request_header = extract_header(request);
+    response = send_request_and_receive_response(browser_proxy_socket, request, request_header.host, request_header.porta);
+    qstring_para_conversao = QString::fromStdString(response);
+    ui->label_response->setText(qstring_para_conversao);
+}
+
+void JanelaPrincipal::on_pushButton_response_clicked()
+{
+
 }

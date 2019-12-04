@@ -14,15 +14,18 @@ class JanelaPrincipal : public QMainWindow
 public:
     JanelaPrincipal(QWidget *parent = nullptr);
     ~JanelaPrincipal();
-    int proxy_socket;
+    int proxy_socket, browser_proxy_socket;
     estrutura_request request_header;
-    string request;
+    string request, response;
 
 private slots:
     void on_pushButton_clicked();
 
 
-    void on_pushButton_2_clicked();
+
+    void on_pushButton_request_clicked();
+
+    void on_pushButton_response_clicked();
 
 private:
     Ui::JanelaPrincipal *ui;

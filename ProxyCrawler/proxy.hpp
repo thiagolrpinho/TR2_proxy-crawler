@@ -16,8 +16,9 @@
 #include "estrutura_helper.hpp"
 
 int start_full_proxy();
-
-string get_request(int server_socket);
+string get_request(int proxy_socket);
+string send_request_and_receive_response(int browser_proxy_socket, string request, char host[350], int porta);
+string send_back_request(int proxy_socket);
 
 
 #endif // PROXY_HPP

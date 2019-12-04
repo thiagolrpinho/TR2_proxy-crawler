@@ -55,6 +55,7 @@ int start_full_proxy() {
       shutdown(server_socket, SHUT_RDWR);
       break;
     }
+
     if( header_attributes.is_get )
     {
       cout << "Request é Get" << endl;
@@ -136,17 +137,57 @@ int start_full_proxy() {
   return 0;
 }
 
-string get_request(int server_socket)
+string get_request(int browser_proxy_socket)
 {
-  int internal_socket;
   string request;
-
-  internal_socket = accept(server_socket, NULL, NULL);
 
   char request_char[40960];
   //Recebe o request
-  recv(internal_socket, request_char, sizeof(request_char), 0);
+  recv(browser_proxy_socket, request_char, sizeof(request_char), 0);
   request = request_char; 
 
   return request;
+}
+
+
+string send_request_and_receive_response(int browser_proxy_socket, string request, char host[350], int porta)
+{
+  hostent *destine_server;
+  int proxy_server_socket;
+  string response;
+  char request_char[4000], response_char[1024];
+
+  //Pulando sites de redirecionamento
+  if( !is_valid_host(host) ) return "Host Inválido";
+  cout << "Host antes do destine: " << host << "!" << endl;
+
+  destine_server = gethostbyname(  host );
+  if( destine_server != NULL ) {
+    cout << "Endereço ip do Host é:" << inet_ntoa( (struct in_addr) *((struct in_addr *) destine_server->h_addr_list[0])) << endl;
+  } else {
+    cout << "Falha ao capturar o ip de: " << host << endl;
+    shutdown(browser_proxy_socket, SHUT_RDWR);
+    return "Falha ao capturar o ip";
+  }
+  strncpy(request_char, request.c_str(), request.size());
+  //Cria o socket cliente como Socket de Envio, para fazer a requisição ao servidor de destino
+  proxy_server_socket = create_client_socket(inet_ntoa( (struct in_addr) *((struct in_addr *) destine_server->h_addr_list[0])), porta);
+  //Envia a requisição ao destino,pelo Socket de Envio, e pega a resposta
+  send(proxy_server_socket, request_char, sizeof(request_char), 0);
+
+  response = "";
+  while( read(proxy_server_socket, &response_char, sizeof(response_char) - 1) != 0)
+  {
+    response += response_char;
+    bzero(response_char, sizeof(response_char));
+  }
+  shutdown(proxy_server_socket, SHUT_RDWR);
+  close(proxy_server_socket);
+
+  return response;
+}
+
+string send_back_request(int proxy_socket)
+{
+
 }
