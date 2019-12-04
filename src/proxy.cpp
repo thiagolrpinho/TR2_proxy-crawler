@@ -1,20 +1,7 @@
-#include <stdio.h>
-#include <stdlib.h>
+#include "proxy.hpp"
 
 
-#include <sys/socket.h>
-#include <unistd.h>
-#include <sys/types.h>
-
-#include <netinet/in.h>
-#include <netdb.h>
-#include <arpa/inet.h>
-
-#include "socket_handler.hpp"
-#include "estrutura_helper.hpp"
-
-
-int main() {
+int start_full_proxy() {
 
   hostent *destine_server;
   estrutura_request header_attributes;
