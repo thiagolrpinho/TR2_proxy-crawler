@@ -9,7 +9,7 @@ string recv_request(int server_socket, int internal_socket){
   internal_socket = accept(server_socket, NULL, NULL);
 
   //Recebe o request
-  while( recv(internal_socket, &request_buffer, sizeof(request_buffer) - 1) != 0)
+  while( recv(internal_socket, &request_buffer, sizeof(request_buffer) - 1, 0) != 0)
   {
     request += request_buffer;
     bzero(request_buffer, sizeof(request_buffer));
@@ -56,29 +56,27 @@ string send_response(string response, int internal_socket){
 
   //Encerra conexão
   shutdown(internal_socket, SHUT_RDWR);
-  close(internal_socket);
 
   return response;
 }
 
 bool send_request(){
 
-  return true
+  return true;
 }
 
 bool recv_response(){
 
-  return true
+  return true;
 }
 
-hostent dns_resolution(estrutura_request header_attributes){
-  hostent *destine_server;
+struct hostent* dns_resolution(estrutura_request header_attributes){
+  hostent* destine_server;
   destine_server = gethostbyname(  header_attributes.host );
   if( destine_server != NULL ) {
     //cout << "Endereço ip do Host é:" << inet_ntoa( (struct in_addr) *((struct in_addr *) destine_server->h_addr_list[0])) << endl;
-    return destine_server;
   } else {
     cout << "Falha ao capturar o ip de: " << header_attributes.host << endl;
-
-    return NULL;
+  }
+  return destine_server;
 }

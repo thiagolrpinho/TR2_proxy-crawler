@@ -1,13 +1,5 @@
 #include "socket_handler.hpp"
 
-#include <stdio.h>
-#include <stdlib.h>
-
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <netinet/tcp.h>
-#include <arpa/inet.h>
-
 
 int create_client_socket(char* address,int port){
   //Cria Socket
