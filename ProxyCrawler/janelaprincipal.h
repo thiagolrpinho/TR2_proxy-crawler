@@ -2,7 +2,7 @@
 #define JANELAPRINCIPAL_H
 
 #include <QMainWindow>
-
+#include "proxy.hpp"
 QT_BEGIN_NAMESPACE
 namespace Ui { class JanelaPrincipal; }
 QT_END_NAMESPACE
@@ -15,6 +15,7 @@ public:
     JanelaPrincipal(QWidget *parent = nullptr);
     ~JanelaPrincipal();
     int proxy_socket;
+    estrutura_request request_header;
 
 private slots:
     void on_pushButton_clicked();

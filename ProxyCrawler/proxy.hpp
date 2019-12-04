@@ -17,4 +17,7 @@
 
 int start_full_proxy();
 
+estrutura_request get_request(int server_socket);
+
+
 #endif // PROXY_HPP

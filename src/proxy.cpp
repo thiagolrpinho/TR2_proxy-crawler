@@ -135,3 +135,22 @@ int start_full_proxy() {
   shutdown(server_socket, SHUT_RDWR);
   return 0;
 }
+
+estrutura_request get_request(int server_socket)
+{
+  int internal_socket;
+  string request;
+
+  internal_socket = accept(server_socket, NULL, NULL);
+
+  char request_char[40960];
+  //Recebe o request
+  recv(internal_socket, request_char, sizeof(request_char), 0);
+  request = request_char;
+
+  //request = set_accept_enconde_identity(request);
+  strncpy(request_char, request.c_str(), request.size());
+  
+
+  return extract_header(request);
+}
