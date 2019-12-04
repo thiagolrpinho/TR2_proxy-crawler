@@ -16,6 +16,7 @@ public:
     ~JanelaPrincipal();
     int proxy_socket;
     estrutura_request request_header;
+    string request;
 
 private slots:
     void on_pushButton_clicked();

@@ -136,7 +136,7 @@ int start_full_proxy() {
   return 0;
 }
 
-estrutura_request get_request(int server_socket)
+string get_request(int server_socket)
 {
   int internal_socket;
   string request;
@@ -146,11 +146,7 @@ estrutura_request get_request(int server_socket)
   char request_char[40960];
   //Recebe o request
   recv(internal_socket, request_char, sizeof(request_char), 0);
-  request = request_char;
+  request = request_char; 
 
-  //request = set_accept_enconde_identity(request);
-  strncpy(request_char, request.c_str(), request.size());
-  
-
-  return extract_header(request);
+  return request;
 }
