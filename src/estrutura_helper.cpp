@@ -118,6 +118,7 @@ bool is_valid_host(const string host )
   if( host == "ocsp.digicert.com") site_valid = false;
   if( host == "ocsp.pki.goog") site_valid = false;
 
+
   return site_valid;
 }
 

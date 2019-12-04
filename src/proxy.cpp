@@ -1,20 +1,7 @@
-#include <stdio.h>
-#include <stdlib.h>
+#include "proxy.hpp"
 
 
-#include <sys/socket.h>
-#include <unistd.h>
-#include <sys/types.h>
-
-#include <netinet/in.h>
-#include <netdb.h>
-#include <arpa/inet.h>
-
-#include "socket_handler.hpp"
-#include "estrutura_helper.hpp"
-
-
-int main() {
+int start_full_proxy() {
 
   hostent *destine_server;
   estrutura_request header_attributes;
@@ -68,6 +55,7 @@ int main() {
       shutdown(server_socket, SHUT_RDWR);
       break;
     }
+
     if( header_attributes.is_get )
     {
       cout << "Request é Get" << endl;
@@ -140,11 +128,85 @@ int main() {
     shutdown(internal_socket, SHUT_RDWR);
     close(internal_socket);
 
-
-
     proceed_count -= 1;
   }
 
   shutdown(server_socket, SHUT_RDWR);
   return 0;
+}
+
+string get_request(int browser_proxy_socket)
+{
+  string request;
+
+  char request_char[40960];
+  //Recebe o request
+  recv(browser_proxy_socket, request_char, sizeof(request_char), 0);
+  request = request_char; 
+
+  return request;
+}
+
+
+string send_request_and_receive_response(int browser_proxy_socket, string request, char host[350], int porta)
+{
+  hostent *destine_server;
+  int proxy_server_socket;
+  string response;
+  char request_char[4000], response_char[1024];
+
+  //Pulando sites de redirecionamento
+  //if( !is_valid_host(host) ) return "Host Inválido";
+
+  destine_server = gethostbyname(  host );
+  if( destine_server != NULL ) {
+    cout << "Endereço ip do Host é:" << inet_ntoa( (struct in_addr) *((struct in_addr *) destine_server->h_addr_list[0])) << endl;
+  } else {
+    cout << "Falha ao capturar o ip de: " << host << endl;
+    shutdown(browser_proxy_socket, SHUT_RDWR);
+    return "Falha ao capturar o ip";
+  }
+  strncpy(request_char, request.c_str(), request.size());
+  //Cria o socket cliente como Socket de Envio, para fazer a requisição ao servidor de destino
+  proxy_server_socket = create_client_socket(inet_ntoa( (struct in_addr) *((struct in_addr *) destine_server->h_addr_list[0])), porta);
+  //Envia a requisição ao destino,pelo Socket de Envio, e pega a resposta
+  send(proxy_server_socket, request_char, sizeof(request_char), 0);
+
+  response = "";
+  while( read(proxy_server_socket, &response_char, sizeof(response_char) - 1) != 0)
+  {
+    response += response_char;
+    bzero(response_char, sizeof(response_char));
+  }
+  shutdown(proxy_server_socket, SHUT_RDWR);
+  close(proxy_server_socket);
+
+  return response;
+}
+
+void send_back_request(int proxy_socket, string response)
+{
+  int total_length, number_of_fragments, segment_size;
+  string partial_response;
+  size_t partial_index_coordinate;
+  char response_char[4096];
+  //Envia a mensagem, pelo Socket Interno
+  total_length = response.size();
+  number_of_fragments = total_length/sizeof(response_char);
+
+  for( int segments_sent = 0; segments_sent <= number_of_fragments; segments_sent++ )
+  {
+    partial_index_coordinate = (segments_sent)*sizeof(response_char);
+
+    if( partial_index_coordinate + sizeof(response_char) >= total_length )
+    {
+      segment_size = total_length - partial_index_coordinate - 1;
+    } else {
+      segment_size = sizeof(response_char);
+    }
+    partial_response = response.substr( partial_index_coordinate , segment_size );
+    strncpy(response_char, partial_response.c_str(), partial_response.size() );
+    send(proxy_socket, response_char, sizeof(response_char), 0);
+  };
+
 }
