@@ -27,6 +27,7 @@ private slots:
 
     void on_pushButton_response_clicked();
 
+
 private:
     Ui::JanelaPrincipal *ui;
 };
