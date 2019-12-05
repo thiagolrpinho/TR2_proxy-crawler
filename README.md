@@ -1,6 +1,6 @@
 # Um Inspetor HTTP baseado em Proxy Server
 
-Thiago Guimarães Barros
+|Thiago Guimarães Barros|
 14/0066225
 Universidade de Brasília
 thigb7@gmail.com
@@ -21,9 +21,13 @@ Um servidor proxy consiste em um intermediador do trafego entre o cliente, que p
 + **Mascarar o endereço do cliente** - O proxy pode ser usado com a finalidade de navegar na web estando anônimo, sendo visto na rede com o endereço do proxy.
 
 ## Arquitetura do Software
+Modularizamos o código utilizando arquivos cpp, e suas respectivas bibliotecas hpp, sendo compilados através de um makefile. Implementamos também testes automatizados para melhorar a robustês do programa e ganhar produtividade. Pra a interface gráfica utilizamos as bibiotecas do QT Creator. Separados em uma arquitetura de pastas que facilite o entendimento, mantendo as boas práticas.
 
 ## Implementação
+Para a implementação do Proxy utilizamos a biblioteca <sockets.h>, com a finalidade de abrir sockets para os IPs e portas desejados, modularizamos essa funcionalidade de abertura de socket criando a biblioteca socket_handler, para a mineração dos dados do cabeçalho request criamos uma biblioteca chamada estrutura_helper, que extrai os dados necessários do header e retorna uma Struct com as informações necessárias como host e etc. Utilizamos a função gethostbyname() para fazer uma requisição ao servidor DNS e termos o IP do domínio solicitado. Para a interface gráfica utilizamos as bibliotecas do QT Creator, e para a criação dos testes automatizados utilizamos a biblioteca <catch.hpp>.
 
 ## Conclusão
+
+Com a conclusão do projeto conseguimos ter um melhor entendimento de como funciona a camada de aplicação tanto como o funcionamento do protocolo HTTP, aprendendo também o funcionamento de um servidor proxy na prática tanto como suas utilidades no âmbito de melhorar desempenho do acesso a rede, mascarar seu real IP e bloquear domínios considerados impróprios para o administrador da rede.
 
 ## Execução do Programa
