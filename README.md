@@ -1,6 +1,6 @@
 # Um Inspetor HTTP baseado em Proxy Server
 
-|Thiago Guimarães Barros|
+Thiago Guimarães Barros
 14/0066225
 Universidade de Brasília
 thigb7@gmail.com
